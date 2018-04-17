@@ -1,11 +1,25 @@
 package PublicServiceTest;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.security.Principal;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletInputStream;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import javax.ws.rs.core.Response;
 
 import org.junit.After;
@@ -27,7 +41,10 @@ import org.mehaexample.asdDemo.enums.DegreeCandidacy;
 import org.mehaexample.asdDemo.enums.EnrollmentStatus;
 import org.mehaexample.asdDemo.enums.Gender;
 import org.mehaexample.asdDemo.enums.Term;
+import org.mehaexample.asdDemo.model.alignadmin.AdminLogins;
+import org.mehaexample.asdDemo.model.alignadmin.Administrators;
 import org.mehaexample.asdDemo.model.alignadmin.LoginObject;
+import org.mehaexample.asdDemo.model.alignadmin.ParamsObject;
 import org.mehaexample.asdDemo.model.alignprivate.ExtraExperiences;
 import org.mehaexample.asdDemo.model.alignprivate.Projects;
 import org.mehaexample.asdDemo.model.alignprivate.StudentLogins;
@@ -57,6 +74,10 @@ public class Student22Test {
 	private static StudentLoginsDao studentLoginsDao;
 	private static ExtraExperiencesDao extraExperiencesDao;
 	private static PasswordCreateObject passwordCreateObject;
+	Students studentChangePassword;
+	StudentLogins studentLogins;
+
+
 
 
 	UndergraduatesPublicDao undergraduatesPublicDao = new UndergraduatesPublicDao(true);
@@ -95,9 +116,9 @@ public class Student22Test {
 				EnrollmentStatus.DROPPED_OUT, Campus.CHARLOTTE, DegreeCandidacy.MASTERS, null, true);
 
 		newStudent.setScholarship(true);
-//		newStudent.setRace("White");
-//		newStudent2.setRace("Black");
-//		newStudent3.setRace("White");
+		//		newStudent.setRace("White");
+		//		newStudent2.setRace("Black");
+		//		newStudent3.setRace("White");
 
 		studentsDao.addStudent(newStudent);
 		studentsDao.addStudent(newStudent2);
@@ -110,6 +131,23 @@ public class Student22Test {
 		//		ExtraExperiences extraExperiences = new ExtraExperiences(NEUIDTEST, "companyName", startdate, 
 		//				enddate, "title", "description"	);
 
+
+		studentChangePassword = new Students("135", "krishnakaranam3732@gmail.com", "Tom", "",
+				"Dog", Gender.M, "F1", "1111111111",
+				"401 Terry Ave", "WA", "Seattle", "98109", Term.FALL, 2015,
+				Term.FALL, 2017,
+				EnrollmentStatus.DROPPED_OUT, Campus.CHARLOTTE, DegreeCandidacy.MASTERS, null, true);
+
+		studentsDao.addStudent(studentChangePassword);
+
+		studentLogins = new StudentLogins("krishnakaranam3732@gmail.com",
+				"$s0$41010$cwF4TDlHcEf5+zxUKgsA3w==$vlMxt0lC641Vdavp9nclzELFgS3YgkuG9GBTgeUKfwQ=",
+				"key",
+				Timestamp.valueOf("2017-09-23 10:10:10.0"),
+				Timestamp.valueOf("2019-09-23 10:10:10.0"),
+				true);
+
+		studentLoginsDao.createStudentLogin(studentLogins);
 	}
 
 	@After
@@ -117,200 +155,203 @@ public class Student22Test {
 		studentsDao.deleteStudent("111");
 		studentsDao.deleteStudent("112");
 		studentsDao.deleteStudent("113");
+
+		studentLoginsDao.deleteStudentLogin("krishnakaranam3732@gmail.com");
+		studentsDao.deleteStudent("135");
 	}
 
-//	@Test
-//	public void updateStudentRecordTest1(){
-//		Students student = studentsDao.getStudentRecord(NEUIDTEST);
-//		student.setCity("BOSTON");
-//		studentFacing.updateStudentRecord(NEUIDTEST, student);
-//
-//		Students studentUpdated = studentsDao.getStudentRecord(NEUIDTEST);
-//
-//		Assert.assertEquals(student.getCity(), studentUpdated.getCity());
-//	}
+	//	@Test
+	//	public void updateStudentRecordTest1(){
+	//		Students student = studentsDao.getStudentRecord(NEUIDTEST);
+	//		student.setCity("BOSTON");
+	//		studentFacing.updateStudentRecord(NEUIDTEST, student);
+	//
+	//		Students studentUpdated = studentsDao.getStudentRecord(NEUIDTEST);
+	//
+	//		Assert.assertEquals(student.getCity(), studentUpdated.getCity());
+	//	}
 
-//	@Test
-//	public void updateStudentRecordTest2(){
-//		Students student = studentsDao.getStudentRecord("10");
-//		Response response = studentFacing.updateStudentRecord("10", student);
-//
-//		studentsDao.getStudentRecord(NEUIDTEST);
-//
-//		Assert.assertEquals("No Student record exists with given ID", response.getEntity().toString());
-//	}
-//	
+	//	@Test
+	//	public void updateStudentRecordTest2(){
+	//		Students student = studentsDao.getStudentRecord("10");
+	//		Response response = studentFacing.updateStudentRecord("10", student);
+	//
+	//		studentsDao.getStudentRecord(NEUIDTEST);
+	//
+	//		Assert.assertEquals("No Student record exists with given ID", response.getEntity().toString());
+	//	}
+	//	
 	@Test
 	public void loginUser1(){
 		LoginObject loginObject = new LoginObject("test.alignstudent123@gmail.com", "mangograpes123");
 		Response  response = studentFacing.loginUser(null, loginObject);
-		
+
 		Assert.assertEquals(response.getEntity().toString(), "User doesn't exist: test.alignstudent123@gmail.com");
 	}
-	
+
 	@Test
 	public void logoutUser1(){
 		LoginObject loginObject = new LoginObject("test.alignstudent123@gmail.com", "mangograpes123");
 		Response  response = studentFacing.logoutUser(null, loginObject);
-		
+
 		Assert.assertEquals(response.getEntity().toString(), "User doesn't exist: test.alignstudent123@gmail.com");
 	}
 
-//	@Test
-//	public void updateStudentRecordTest3(){
-//		Students student = studentsDao.getStudentRecord(NEUIDTEST);
-//		student.setCity("BOSTON");
-//		Response resp = studentFacing.updateStudentRecord(NEUIDTEST, student);
-//
-//		studentsDao.getStudentRecord(NEUIDTEST);
-//		Assert.assertEquals(200, resp.getStatus());
-//	}
+	//	@Test
+	//	public void updateStudentRecordTest3(){
+	//		Students student = studentsDao.getStudentRecord(NEUIDTEST);
+	//		student.setCity("BOSTON");
+	//		Response resp = studentFacing.updateStudentRecord(NEUIDTEST, student);
+	//
+	//		studentsDao.getStudentRecord(NEUIDTEST);
+	//		Assert.assertEquals(200, resp.getStatus());
+	//	}
 
-//	@Test
-//	public void addExtraExperienceTest1(){
-//		Students student = studentsDao.getStudentRecord(NEUIDTEST);
-//		List<ExtraExperiences> extraExperiences =
-//				extraExperiencesDao.getExtraExperiencesByNeuId(NEUIDTEST);
-//
-//		ExtraExperienceObject extraExperiencesObject = new ExtraExperienceObject();
-//
-//		Response resp = studentFacing.addExtraExperience("10", extraExperiencesObject);
-//
-//		Assert.assertEquals("No Student record exists with given ID", resp.getEntity().toString());
-//	}
-//
-//	@Test
-//	public void addExtraExperienceTest2(){
-//		String endDate = "2017-01-04";
-//		String startDate = "2018-01-04";
-//		ExtraExperienceObject extraExperiencesObject = 
-//				new ExtraExperienceObject(111, NEUIDTEST, "companyName", startDate, 
-//						endDate, "title", "description");
-//
-//		Response resp = studentFacing.addExtraExperience(NEUIDTEST, extraExperiencesObject);
-//		System.out.println("extra id" + extraExperiencesObject.getExtraExperienceId());
-//
-//		Assert.assertEquals(200, resp.getStatus());
-//
-//		int experirnceId = Integer.parseInt(resp.getEntity().toString());
-//		Response resp2 = studentFacing.deleteExtraExperience(NEUIDTEST, experirnceId);
-//		Assert.assertEquals("Experience deleted successfully", resp2.getEntity().toString());
-//	}
+	//	@Test
+	//	public void addExtraExperienceTest1(){
+	//		Students student = studentsDao.getStudentRecord(NEUIDTEST);
+	//		List<ExtraExperiences> extraExperiences =
+	//				extraExperiencesDao.getExtraExperiencesByNeuId(NEUIDTEST);
+	//
+	//		ExtraExperienceObject extraExperiencesObject = new ExtraExperienceObject();
+	//
+	//		Response resp = studentFacing.addExtraExperience("10", extraExperiencesObject);
+	//
+	//		Assert.assertEquals("No Student record exists with given ID", resp.getEntity().toString());
+	//	}
+	//
+	//	@Test
+	//	public void addExtraExperienceTest2(){
+	//		String endDate = "2017-01-04";
+	//		String startDate = "2018-01-04";
+	//		ExtraExperienceObject extraExperiencesObject = 
+	//				new ExtraExperienceObject(111, NEUIDTEST, "companyName", startDate, 
+	//						endDate, "title", "description");
+	//
+	//		Response resp = studentFacing.addExtraExperience(NEUIDTEST, extraExperiencesObject);
+	//		System.out.println("extra id" + extraExperiencesObject.getExtraExperienceId());
+	//
+	//		Assert.assertEquals(200, resp.getStatus());
+	//
+	//		int experirnceId = Integer.parseInt(resp.getEntity().toString());
+	//		Response resp2 = studentFacing.deleteExtraExperience(NEUIDTEST, experirnceId);
+	//		Assert.assertEquals("Experience deleted successfully", resp2.getEntity().toString());
+	//	}
 
-//	@Test
-//	public void addProjectTest1(){
-//		Students student = studentsDao.getStudentRecord(NEUIDTEST);
-//		List<Projects> projects =
-//				projectsDao.getProjectsByNeuId(NEUIDTEST);
-//
-//		ProjectObject projectObject = new ProjectObject();
-//
-//		Response resp = studentFacing.addProject("10", projectObject);
-//
-//
-//		Assert.assertEquals("No Student record exists with given ID", resp.getEntity().toString());
-//	}
-	
-//	@Test
-//	public void updateProject1(){
-//		String endDate = "2017-01-04";
-//		String startDate = "2018-01-04";
-//
-//		ProjectObject projectObject = new ProjectObject(10, NEUIDTEST, "Student Website", "2018-01-01",
-//				"2019-01-01", "description");
-//
-//		Response resp = studentFacing.addProject(NEUIDTEST, projectObject);
-//
-//		Assert.assertEquals(200, resp.getStatus());
-//		
-//		ProjectObject projectNew = new ProjectObject();
-//		projectNew.setDescription("d2");
-//		
-//		int projectId = Integer.parseInt(resp.getEntity().toString()); 
-//		Response respUpdate = studentFacing.updateProject(NEUIDTEST, projectId, projectNew);
-//
-//		Assert.assertEquals(200, respUpdate.getStatus());
-//		Assert.assertEquals(projectObject.getDescription(), projectNew.getDescription());
-//
-//		Response resp2 = studentFacing.deleteProject(NEUIDTEST, projectId);
-//		Assert.assertEquals("Project deleted successfully", resp2.getEntity().toString());
-//	}
+	//	@Test
+	//	public void addProjectTest1(){
+	//		Students student = studentsDao.getStudentRecord(NEUIDTEST);
+	//		List<Projects> projects =
+	//				projectsDao.getProjectsByNeuId(NEUIDTEST);
+	//
+	//		ProjectObject projectObject = new ProjectObject();
+	//
+	//		Response resp = studentFacing.addProject("10", projectObject);
+	//
+	//
+	//		Assert.assertEquals("No Student record exists with given ID", resp.getEntity().toString());
+	//	}
 
-//	@Test
-//	public void updatePrivaciesTest1(){
-//		EmailToRegister emailToRegister = new EmailToRegister("");
-//		Response res = studentFacing.sendRegistrationEmail(emailToRegister);
-//
-//		String response = (String) res.getEntity();
-//
-//		Assert.assertEquals("Email Id can't be null or empty" , response); 
-//	}
-	
-//	@Test
-//	public void addProjectTest2(){
-//		String endDate = "2017-01-04";
-//		String startDate = "2018-01-04";
-//
-//		ProjectObject projectObject = new ProjectObject(10, NEUIDTEST, "Student Website", "2018-01-01",
-//				"2019-01-01", "description");
-//
-//		Response resp = studentFacing.addProject(NEUIDTEST, projectObject);
-//
-//		Assert.assertEquals(200, resp.getStatus());
-//
-//		int projectId = Integer.parseInt(resp.getEntity().toString());
-//		Response resp2 = studentFacing.deleteProject(NEUIDTEST, projectId);
-//		Assert.assertEquals("Project deleted successfully", resp2.getEntity().toString());
-//	}
+	//	@Test
+	//	public void updateProject1(){
+	//		String endDate = "2017-01-04";
+	//		String startDate = "2018-01-04";
+	//
+	//		ProjectObject projectObject = new ProjectObject(10, NEUIDTEST, "Student Website", "2018-01-01",
+	//				"2019-01-01", "description");
+	//
+	//		Response resp = studentFacing.addProject(NEUIDTEST, projectObject);
+	//
+	//		Assert.assertEquals(200, resp.getStatus());
+	//		
+	//		ProjectObject projectNew = new ProjectObject();
+	//		projectNew.setDescription("d2");
+	//		
+	//		int projectId = Integer.parseInt(resp.getEntity().toString()); 
+	//		Response respUpdate = studentFacing.updateProject(NEUIDTEST, projectId, projectNew);
+	//
+	//		Assert.assertEquals(200, respUpdate.getStatus());
+	//		Assert.assertEquals(projectObject.getDescription(), projectNew.getDescription());
+	//
+	//		Response resp2 = studentFacing.deleteProject(NEUIDTEST, projectId);
+	//		Assert.assertEquals("Project deleted successfully", resp2.getEntity().toString());
+	//	}
 
-//	@Test
-//	public void getStudentExtraExperience1(){
-//		String endDate = "2017-01-04";
-//		String startDate = "2018-01-04";
-//		ExtraExperienceObject extraExperiencesObject = 
-//				new ExtraExperienceObject(111, NEUIDTEST, "companyName", startDate, 
-//						endDate, "title", "description");
-//
-//		Response resp = studentFacing.addExtraExperience(NEUIDTEST, extraExperiencesObject);
-//		Response getResp = studentFacing.getStudentExtraExperience(NEUIDTEST);
-//
-//		Assert.assertEquals(200, getResp.getStatus());
-//
-//		int experirnceId = Integer.parseInt(resp.getEntity().toString());
-//		Response resp2 = studentFacing.deleteExtraExperience(NEUIDTEST, experirnceId);
-//		Assert.assertEquals("Experience deleted successfully", resp2.getEntity().toString());
-//	}
+	//	@Test
+	//	public void updatePrivaciesTest1(){
+	//		EmailToRegister emailToRegister = new EmailToRegister("");
+	//		Response res = studentFacing.sendRegistrationEmail(emailToRegister);
+	//
+	//		String response = (String) res.getEntity();
+	//
+	//		Assert.assertEquals("Email Id can't be null or empty" , response); 
+	//	}
 
-//	@Test
-//	public void getStudentWorkExperiences1(){
-//		WorkExperiences newWorkExperience = new WorkExperiences();
-//		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-//		try {
-//			newWorkExperience.setStartDate(dateFormat.parse("2017-06-01"));
-//		} catch (ParseException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//		try {
-//			newWorkExperience.setEndDate(dateFormat.parse("2017-12-01"));
-//		} catch (ParseException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//		newWorkExperience.setCurrentJob(false);
-//		newWorkExperience.setCoop(true);
-//		newWorkExperience.setTitle("Title");
-//		newWorkExperience.setDescription("Description");
-//		newWorkExperience.setNeuId(NEUIDTEST);
-//		newWorkExperience.setCompanyName("Amazon");
-//		workExperiencesDao.createWorkExperience(newWorkExperience);
-//
-//		Response response = studentFacing.getStudentWorkExperiences(NEUIDTEST);
-//
-//		Assert.assertEquals(200, response.getStatus());
-//
-//		workExperiencesDao.deleteWorkExperienceByNeuId(NEUIDTEST);
-//	}
+	//	@Test
+	//	public void addProjectTest2(){
+	//		String endDate = "2017-01-04";
+	//		String startDate = "2018-01-04";
+	//
+	//		ProjectObject projectObject = new ProjectObject(10, NEUIDTEST, "Student Website", "2018-01-01",
+	//				"2019-01-01", "description");
+	//
+	//		Response resp = studentFacing.addProject(NEUIDTEST, projectObject);
+	//
+	//		Assert.assertEquals(200, resp.getStatus());
+	//
+	//		int projectId = Integer.parseInt(resp.getEntity().toString());
+	//		Response resp2 = studentFacing.deleteProject(NEUIDTEST, projectId);
+	//		Assert.assertEquals("Project deleted successfully", resp2.getEntity().toString());
+	//	}
+
+	//	@Test
+	//	public void getStudentExtraExperience1(){
+	//		String endDate = "2017-01-04";
+	//		String startDate = "2018-01-04";
+	//		ExtraExperienceObject extraExperiencesObject = 
+	//				new ExtraExperienceObject(111, NEUIDTEST, "companyName", startDate, 
+	//						endDate, "title", "description");
+	//
+	//		Response resp = studentFacing.addExtraExperience(NEUIDTEST, extraExperiencesObject);
+	//		Response getResp = studentFacing.getStudentExtraExperience(NEUIDTEST);
+	//
+	//		Assert.assertEquals(200, getResp.getStatus());
+	//
+	//		int experirnceId = Integer.parseInt(resp.getEntity().toString());
+	//		Response resp2 = studentFacing.deleteExtraExperience(NEUIDTEST, experirnceId);
+	//		Assert.assertEquals("Experience deleted successfully", resp2.getEntity().toString());
+	//	}
+
+	//	@Test
+	//	public void getStudentWorkExperiences1(){
+	//		WorkExperiences newWorkExperience = new WorkExperiences();
+	//		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+	//		try {
+	//			newWorkExperience.setStartDate(dateFormat.parse("2017-06-01"));
+	//		} catch (ParseException e) {
+	//			// TODO Auto-generated catch block
+	//			e.printStackTrace();
+	//		}
+	//		try {
+	//			newWorkExperience.setEndDate(dateFormat.parse("2017-12-01"));
+	//		} catch (ParseException e) {
+	//			// TODO Auto-generated catch block
+	//			e.printStackTrace();
+	//		}
+	//		newWorkExperience.setCurrentJob(false);
+	//		newWorkExperience.setCoop(true);
+	//		newWorkExperience.setTitle("Title");
+	//		newWorkExperience.setDescription("Description");
+	//		newWorkExperience.setNeuId(NEUIDTEST);
+	//		newWorkExperience.setCompanyName("Amazon");
+	//		workExperiencesDao.createWorkExperience(newWorkExperience);
+	//
+	//		Response response = studentFacing.getStudentWorkExperiences(NEUIDTEST);
+	//
+	//		Assert.assertEquals(200, response.getStatus());
+	//
+	//		workExperiencesDao.deleteWorkExperienceByNeuId(NEUIDTEST);
+	//	}
 
 	@Test
 	public void registerStudent1(){
@@ -433,7 +474,7 @@ public class Student22Test {
 
 		studentLoginsDao.deleteStudentLogin("tomcat3@gmail.com");
 	}
-	
+
 	@Test
 	public void createPassword1(){
 
@@ -444,7 +485,7 @@ public class Student22Test {
 				Timestamp.valueOf("2017-09-23 10:10:10.0"),
 				true);
 		studentLoginsDao.createStudentLogin(studentLogins);
-		
+
 		PasswordCreateObject passwordCreateObject = new
 				PasswordCreateObject("tomcat3@gmail.com", "password","key");
 
@@ -456,7 +497,7 @@ public class Student22Test {
 
 		studentLoginsDao.deleteStudentLogin("tomcat3@gmail.com");
 	}
-	
+
 	@Test
 	public void createPassword2(){
 		StudentLogins studentLogins = new StudentLogins("tomcat3@gmail.com",
@@ -466,7 +507,7 @@ public class Student22Test {
 				Timestamp.valueOf("2017-09-23 10:10:10.0"),
 				true);
 		studentLoginsDao.createStudentLogin(studentLogins);
-		
+
 		PasswordCreateObject passwordCreateObject = new
 				PasswordCreateObject("tomcat3@gmail.com", "password","key");
 		passwordCreateObject.setEmail(null);
@@ -479,27 +520,1973 @@ public class Student22Test {
 
 		studentLoginsDao.deleteStudentLogin("tomcat3@gmail.com");
 	}
-	
-//	@Test
-//	public void createPassword3(){
-//		StudentLogins studentLogins = new StudentLogins("tomcat@gmail.com",
-//				"password1",
-//				"key",
-//				Timestamp.valueOf("2017-09-23 10:10:10.0"),
-//				Timestamp.valueOf("2017-09-23 10:10:10.0"),
-//				true);
-//		studentLoginsDao.createStudentLogin(studentLogins);
-//		
-//		PasswordCreateObject passwordCreateObject = new
-//				PasswordCreateObject("tomcat@gmail.com", "password1", studentLogins.getRegistrationKey());
-//
-//		Response res = studentFacing.createPassword(passwordCreateObject);
-//
-//		String response = (String) res.getEntity();
-//
-//		Assert.assertEquals("Password Reset successfully" , response); 
-//
-//		studentLoginsDao.deleteStudentLogin("tomcat@gmail.com");
-//	}
+
+	/*
+    createPassword
+	 */
+
+	@Test
+	public void CreatePasswordTest() throws SQLException, ParseException {
+		Students TestStudent = new Students("19", "studentlogintest@gmail.com", "test", "test",
+				"test", Gender.M, "F1", "1111111111",
+				"401 Terry Ave", "WA", "Seattle", "98109", Term.FALL, 2015,
+				Term.SPRING, 2017,
+				EnrollmentStatus.FULL_TIME, Campus.SEATTLE, DegreeCandidacy.MASTERS, null, true);
+		studentsDao.addStudent(TestStudent);
+
+		StudentLogins studentLogins = new StudentLogins("studentlogintest@gmail.com",
+				"password",
+				"key",
+				Timestamp.valueOf("2017-09-23 10:10:10.0"),
+				Timestamp.valueOf("2017-09-23 10:10:10.0"),
+				false);
+		studentLoginsDao.createStudentLogin(studentLogins);
+
+		passwordCreateObject = new PasswordCreateObject("studentlogintest@gmail.com",
+				"passwordTest","key");
+
+		Response response =  studentFacing.createPassword(passwordCreateObject);
+		Assert.assertEquals(200, response.getStatus());
+
+		studentLoginsDao.deleteStudentLogin("studentlogintest@gmail.com");
+		studentsDao.deleteStudent(TestStudent.getNeuId());
+	}
+
+	@Test
+	public void CreatePasswordRegitrationExpTest() throws SQLException, ParseException {
+		Students TestStudent = new Students("45", "studentlogintest@gmail.com", "test", "test",
+				"test", Gender.M, "F1", "1111111111",
+				"401 Terry Ave", "WA", "Seattle", "98109", Term.FALL, 2015,
+				Term.SPRING, 2017,
+				EnrollmentStatus.FULL_TIME, Campus.SEATTLE, DegreeCandidacy.MASTERS, null, true);
+		studentsDao.addStudent(TestStudent);
+
+		StudentLogins studentLogins = new StudentLogins("studentlogintest@gmail.com",
+				"password",
+				"key",
+				Timestamp.valueOf("2017-09-23 10:10:10.0"),
+				Timestamp.valueOf("2017-09-23 10:10:10.0"),
+				false);
+		studentLoginsDao.createStudentLogin(studentLogins);
+
+		passwordCreateObject = new PasswordCreateObject("studentlogintest@gmail.com",
+				"passwordTest","key");
+
+		Response TopBachelorResponse;
+		TopBachelorResponse = studentFacing.createPassword(passwordCreateObject);
+		Assert.assertEquals(200, TopBachelorResponse.getStatus());
+
+		studentLoginsDao.deleteStudentLogin("studentlogintest@gmail.com");
+		studentsDao.deleteStudent(TestStudent.getNeuId());
+	}
+
+	@Test
+	public void CreatePasswordNoEmailExpTest() throws SQLException, ParseException {
+		passwordCreateObject = new PasswordCreateObject("test@gmail.com",
+				"passwordTest","key");
+
+		Response response = studentFacing.createPassword(passwordCreateObject);
+		Assert.assertEquals(400, response.getStatus());
+	}
+
+	@Test
+	public void CreatePasswordErrorTest() throws SQLException, ParseException {
+		Students TestStudent = new Students("45", "studentlogintest@gmail.com", "test", "test",
+				"test", Gender.M, "F1", "1111111111",
+				"401 Terry Ave", "WA", "Seattle", "98109", Term.FALL, 2015,
+				Term.SPRING, 2017,
+				EnrollmentStatus.FULL_TIME, Campus.SEATTLE, DegreeCandidacy.MASTERS, null, true);
+		studentsDao.addStudent(TestStudent);
+
+		StudentLogins studentLogins = new StudentLogins("studentlogintest@gmail.com",
+				"password",
+				"key",
+				Timestamp.valueOf("2017-09-23 10:10:10.0"),
+				Timestamp.valueOf("2017-09-23 10:10:10.0"),
+				false);
+		studentLoginsDao.createStudentLogin(studentLogins);
+
+		passwordCreateObject = new PasswordCreateObject("studentlogintest@gmail.com",
+				"passwordTest","key1");
+
+		Response TopBachelorResponse;
+		TopBachelorResponse = studentFacing.createPassword(passwordCreateObject);
+		Assert.assertEquals(400, TopBachelorResponse.getStatus());
+
+		studentLoginsDao.deleteStudentLogin("studentlogintest@gmail.com");
+		studentsDao.deleteStudent(TestStudent.getNeuId());
+	}
+
+	@Test
+	public void CreatePassworddataErrorTest() throws SQLException, ParseException {
+		passwordCreateObject = new PasswordCreateObject();
+		Response TopBachelorResponse;
+		TopBachelorResponse = studentFacing.createPassword(passwordCreateObject);
+		Assert.assertEquals(400, TopBachelorResponse.getStatus());
+
+	}
+
+	/*
+	 * Student Login Tests
+	 */
+
+	@Test
+	public void StudentLoginTest() throws SQLException, ParseException {
+		HttpServletRequest request = new HttpServletRequest() {
+			@Override
+			public String getAuthType() {
+				return null;
+			}
+
+			@Override
+			public Cookie[] getCookies() {
+				return new Cookie[0];
+			}
+
+			@Override
+			public long getDateHeader(String s) {
+				return 0;
+			}
+
+			@Override
+			public String getHeader(String s) {
+				return null;
+			}
+
+			@Override
+			public Enumeration getHeaders(String s) {
+				return null;
+			}
+
+			@Override
+			public Enumeration getHeaderNames() {
+				return null;
+			}
+
+			@Override
+			public int getIntHeader(String s) {
+				return 0;
+			}
+
+			@Override
+			public String getMethod() {
+				return null;
+			}
+
+			@Override
+			public String getPathInfo() {
+				return null;
+			}
+
+			@Override
+			public String getPathTranslated() {
+				return null;
+			}
+
+			@Override
+			public String getContextPath() {
+				return null;
+			}
+
+			@Override
+			public String getQueryString() {
+				return null;
+			}
+
+			@Override
+			public String getRemoteUser() {
+				return null;
+			}
+
+			@Override
+			public boolean isUserInRole(String s) {
+				return false;
+			}
+
+			@Override
+			public Principal getUserPrincipal() {
+				return null;
+			}
+
+			@Override
+			public String getRequestedSessionId() {
+				return null;
+			}
+
+			@Override
+			public String getRequestURI() {
+				return null;
+			}
+
+			@Override
+			public StringBuffer getRequestURL() {
+				return null;
+			}
+
+			@Override
+			public String getServletPath() {
+				return null;
+			}
+
+			@Override
+			public HttpSession getSession(boolean b) {
+				return null;
+			}
+
+			@Override
+			public HttpSession getSession() {
+				return null;
+			}
+
+			@Override
+			public boolean isRequestedSessionIdValid() {
+				return false;
+			}
+
+			@Override
+			public boolean isRequestedSessionIdFromCookie() {
+				return false;
+			}
+
+			@Override
+			public boolean isRequestedSessionIdFromURL() {
+				return false;
+			}
+
+			@Override
+			public boolean isRequestedSessionIdFromUrl() {
+				return false;
+			}
+
+			@Override
+			public Object getAttribute(String s) {
+				return null;
+			}
+
+			@Override
+			public Enumeration getAttributeNames() {
+				return null;
+			}
+
+			@Override
+			public String getCharacterEncoding() {
+				return null;
+			}
+
+			@Override
+			public void setCharacterEncoding(String s) throws UnsupportedEncodingException {
+
+			}
+
+			@Override
+			public int getContentLength() {
+				return 0;
+			}
+
+			@Override
+			public String getContentType() {
+				return null;
+			}
+
+			@Override
+			public ServletInputStream getInputStream() throws IOException {
+				return null;
+			}
+
+			@Override
+			public String getParameter(String s) {
+				return null;
+			}
+
+			@Override
+			public Enumeration getParameterNames() {
+				return null;
+			}
+
+			@Override
+			public String[] getParameterValues(String s) {
+				return new String[0];
+			}
+
+			@Override
+			public Map getParameterMap() {
+				return null;
+			}
+
+			@Override
+			public String getProtocol() {
+				return null;
+			}
+
+			@Override
+			public String getScheme() {
+				return null;
+			}
+
+			@Override
+			public String getServerName() {
+				return null;
+			}
+
+			@Override
+			public int getServerPort() {
+				return 0;
+			}
+
+			@Override
+			public BufferedReader getReader() throws IOException {
+				return null;
+			}
+
+			@Override
+			public String getRemoteAddr() {
+				return null;
+			}
+
+			@Override
+			public String getRemoteHost() {
+				return null;
+			}
+
+			@Override
+			public void setAttribute(String s, Object o) {
+
+			}
+
+			@Override
+			public void removeAttribute(String s) {
+
+			}
+
+			@Override
+			public Locale getLocale() {
+				return null;
+			}
+
+			@Override
+			public Enumeration getLocales() {
+				return null;
+			}
+
+			@Override
+			public boolean isSecure() {
+				return false;
+			}
+
+			@Override
+			public RequestDispatcher getRequestDispatcher(String s) {
+				return null;
+			}
+
+			@Override
+			public String getRealPath(String s) {
+				return null;
+			}
+
+			@Override
+			public int getRemotePort() {
+				return 0;
+			}
+
+			@Override
+			public String getLocalName() {
+				return null;
+			}
+
+			@Override
+			public String getLocalAddr() {
+				return null;
+			}
+
+			@Override
+			public int getLocalPort() {
+				return 0;
+			}
+		};
+
+		LoginObject loginObject = new LoginObject("krishnakaranam3732@gmail.com","$s0$41010$cwF4TDlHcEf5+zxUKgsA3w==$vlMxt0lC641Vdavp9nclzELFgS3YgkuG9GBTgeUKfwQ=");
+
+		Response TopBachelorResponse;
+		TopBachelorResponse = studentFacing.loginUser(request ,loginObject);
+		Assert.assertEquals(401, TopBachelorResponse.getStatus());
+
+	}
+	@Test
+	public void StudentLoginIncorrectTest() throws SQLException, ParseException {
+		HttpServletRequest request = new HttpServletRequest() {
+			@Override
+			public String getAuthType() {
+				return null;
+			}
+
+			@Override
+			public Cookie[] getCookies() {
+				return new Cookie[0];
+			}
+
+			@Override
+			public long getDateHeader(String s) {
+				return 0;
+			}
+
+			@Override
+			public String getHeader(String s) {
+				return null;
+			}
+
+			@Override
+			public Enumeration getHeaders(String s) {
+				return null;
+			}
+
+			@Override
+			public Enumeration getHeaderNames() {
+				return null;
+			}
+
+			@Override
+			public int getIntHeader(String s) {
+				return 0;
+			}
+
+			@Override
+			public String getMethod() {
+				return null;
+			}
+
+			@Override
+			public String getPathInfo() {
+				return null;
+			}
+
+			@Override
+			public String getPathTranslated() {
+				return null;
+			}
+
+			@Override
+			public String getContextPath() {
+				return null;
+			}
+
+			@Override
+			public String getQueryString() {
+				return null;
+			}
+
+			@Override
+			public String getRemoteUser() {
+				return null;
+			}
+
+			@Override
+			public boolean isUserInRole(String s) {
+				return false;
+			}
+
+			@Override
+			public Principal getUserPrincipal() {
+				return null;
+			}
+
+			@Override
+			public String getRequestedSessionId() {
+				return null;
+			}
+
+			@Override
+			public String getRequestURI() {
+				return null;
+			}
+
+			@Override
+			public StringBuffer getRequestURL() {
+				return null;
+			}
+
+			@Override
+			public String getServletPath() {
+				return null;
+			}
+
+			@Override
+			public HttpSession getSession(boolean b) {
+				return null;
+			}
+
+			@Override
+			public HttpSession getSession() {
+				return null;
+			}
+
+			@Override
+			public boolean isRequestedSessionIdValid() {
+				return false;
+			}
+
+			@Override
+			public boolean isRequestedSessionIdFromCookie() {
+				return false;
+			}
+
+			@Override
+			public boolean isRequestedSessionIdFromURL() {
+				return false;
+			}
+
+			@Override
+			public boolean isRequestedSessionIdFromUrl() {
+				return false;
+			}
+
+			@Override
+			public Object getAttribute(String s) {
+				return null;
+			}
+
+			@Override
+			public Enumeration getAttributeNames() {
+				return null;
+			}
+
+			@Override
+			public String getCharacterEncoding() {
+				return null;
+			}
+
+			@Override
+			public void setCharacterEncoding(String s) throws UnsupportedEncodingException {
+
+			}
+
+			@Override
+			public int getContentLength() {
+				return 0;
+			}
+
+			@Override
+			public String getContentType() {
+				return null;
+			}
+
+			@Override
+			public ServletInputStream getInputStream() throws IOException {
+				return null;
+			}
+
+			@Override
+			public String getParameter(String s) {
+				return null;
+			}
+
+			@Override
+			public Enumeration getParameterNames() {
+				return null;
+			}
+
+			@Override
+			public String[] getParameterValues(String s) {
+				return new String[0];
+			}
+
+			@Override
+			public Map getParameterMap() {
+				return null;
+			}
+
+			@Override
+			public String getProtocol() {
+				return null;
+			}
+
+			@Override
+			public String getScheme() {
+				return null;
+			}
+
+			@Override
+			public String getServerName() {
+				return null;
+			}
+
+			@Override
+			public int getServerPort() {
+				return 0;
+			}
+
+			@Override
+			public BufferedReader getReader() throws IOException {
+				return null;
+			}
+
+			@Override
+			public String getRemoteAddr() {
+				return null;
+			}
+
+			@Override
+			public String getRemoteHost() {
+				return null;
+			}
+
+			@Override
+			public void setAttribute(String s, Object o) {
+
+			}
+
+			@Override
+			public void removeAttribute(String s) {
+
+			}
+
+			@Override
+			public Locale getLocale() {
+				return null;
+			}
+
+			@Override
+			public Enumeration getLocales() {
+				return null;
+			}
+
+			@Override
+			public boolean isSecure() {
+				return false;
+			}
+
+			@Override
+			public RequestDispatcher getRequestDispatcher(String s) {
+				return null;
+			}
+
+			@Override
+			public String getRealPath(String s) {
+				return null;
+			}
+
+			@Override
+			public int getRemotePort() {
+				return 0;
+			}
+
+			@Override
+			public String getLocalName() {
+				return null;
+			}
+
+			@Override
+			public String getLocalAddr() {
+				return null;
+			}
+
+			@Override
+			public int getLocalPort() {
+				return 0;
+			}
+		};
+
+		LoginObject loginObject = new LoginObject("krishnakaranam3732@gmail.com","password");
+
+		Response TopBachelorResponse;
+		TopBachelorResponse = studentFacing.loginUser(request ,loginObject);
+		Assert.assertEquals(200, TopBachelorResponse.getStatus());
+
+	}
+
+	@Test
+	public void StudentLoginNullTest() throws SQLException, ParseException {
+		HttpServletRequest request = new HttpServletRequest() {
+			@Override
+			public String getAuthType() {
+				return null;
+			}
+
+			@Override
+			public Cookie[] getCookies() {
+				return new Cookie[0];
+			}
+
+			@Override
+			public long getDateHeader(String s) {
+				return 0;
+			}
+
+			@Override
+			public String getHeader(String s) {
+				return null;
+			}
+
+			@Override
+			public Enumeration getHeaders(String s) {
+				return null;
+			}
+
+			@Override
+			public Enumeration getHeaderNames() {
+				return null;
+			}
+
+			@Override
+			public int getIntHeader(String s) {
+				return 0;
+			}
+
+			@Override
+			public String getMethod() {
+				return null;
+			}
+
+			@Override
+			public String getPathInfo() {
+				return null;
+			}
+
+			@Override
+			public String getPathTranslated() {
+				return null;
+			}
+
+			@Override
+			public String getContextPath() {
+				return null;
+			}
+
+			@Override
+			public String getQueryString() {
+				return null;
+			}
+
+			@Override
+			public String getRemoteUser() {
+				return null;
+			}
+
+			@Override
+			public boolean isUserInRole(String s) {
+				return false;
+			}
+
+			@Override
+			public Principal getUserPrincipal() {
+				return null;
+			}
+
+			@Override
+			public String getRequestedSessionId() {
+				return null;
+			}
+
+			@Override
+			public String getRequestURI() {
+				return null;
+			}
+
+			@Override
+			public StringBuffer getRequestURL() {
+				return null;
+			}
+
+			@Override
+			public String getServletPath() {
+				return null;
+			}
+
+			@Override
+			public HttpSession getSession(boolean b) {
+				return null;
+			}
+
+			@Override
+			public HttpSession getSession() {
+				return null;
+			}
+
+			@Override
+			public boolean isRequestedSessionIdValid() {
+				return false;
+			}
+
+			@Override
+			public boolean isRequestedSessionIdFromCookie() {
+				return false;
+			}
+
+			@Override
+			public boolean isRequestedSessionIdFromURL() {
+				return false;
+			}
+
+			@Override
+			public boolean isRequestedSessionIdFromUrl() {
+				return false;
+			}
+
+			@Override
+			public Object getAttribute(String s) {
+				return null;
+			}
+
+			@Override
+			public Enumeration getAttributeNames() {
+				return null;
+			}
+
+			@Override
+			public String getCharacterEncoding() {
+				return null;
+			}
+
+			@Override
+			public void setCharacterEncoding(String s) throws UnsupportedEncodingException {
+
+			}
+
+			@Override
+			public int getContentLength() {
+				return 0;
+			}
+
+			@Override
+			public String getContentType() {
+				return null;
+			}
+
+			@Override
+			public ServletInputStream getInputStream() throws IOException {
+				return null;
+			}
+
+			@Override
+			public String getParameter(String s) {
+				return null;
+			}
+
+			@Override
+			public Enumeration getParameterNames() {
+				return null;
+			}
+
+			@Override
+			public String[] getParameterValues(String s) {
+				return new String[0];
+			}
+
+			@Override
+			public Map getParameterMap() {
+				return null;
+			}
+
+			@Override
+			public String getProtocol() {
+				return null;
+			}
+
+			@Override
+			public String getScheme() {
+				return null;
+			}
+
+			@Override
+			public String getServerName() {
+				return null;
+			}
+
+			@Override
+			public int getServerPort() {
+				return 0;
+			}
+
+			@Override
+			public BufferedReader getReader() throws IOException {
+				return null;
+			}
+
+			@Override
+			public String getRemoteAddr() {
+				return null;
+			}
+
+			@Override
+			public String getRemoteHost() {
+				return null;
+			}
+
+			@Override
+			public void setAttribute(String s, Object o) {
+
+			}
+
+			@Override
+			public void removeAttribute(String s) {
+
+			}
+
+			@Override
+			public Locale getLocale() {
+				return null;
+			}
+
+			@Override
+			public Enumeration getLocales() {
+				return null;
+			}
+
+			@Override
+			public boolean isSecure() {
+				return false;
+			}
+
+			@Override
+			public RequestDispatcher getRequestDispatcher(String s) {
+				return null;
+			}
+
+			@Override
+			public String getRealPath(String s) {
+				return null;
+			}
+
+			@Override
+			public int getRemotePort() {
+				return 0;
+			}
+
+			@Override
+			public String getLocalName() {
+				return null;
+			}
+
+			@Override
+			public String getLocalAddr() {
+				return null;
+			}
+
+			@Override
+			public int getLocalPort() {
+				return 0;
+			}
+		};
+
+		LoginObject loginObject = new LoginObject("null@gmail.com","password");
+
+		Response TopBachelorResponse;
+		TopBachelorResponse = studentFacing.loginUser(request ,loginObject);
+		Assert.assertEquals(404, TopBachelorResponse.getStatus());
+
+	}
+
+	@Test
+	public void StudentLoginNull2Test() throws SQLException, ParseException {
+		Students TestStudent = new Students("290", "null2@gmail.com", "test", "test",
+				"test", Gender.M, "F1", "1111111111",
+				"401 Terry Ave", "WA", "Seattle", "98109", Term.FALL, 2015,
+				Term.SPRING, 2017,
+				EnrollmentStatus.FULL_TIME, Campus.SEATTLE, DegreeCandidacy.MASTERS, null, true);
+		studentsDao.addStudent(TestStudent);
+
+		StudentLogins studentLogins = new StudentLogins("null2@gmail.com",
+				"pass",
+				"key",
+				Timestamp.valueOf("2017-09-23 10:10:10.0"),
+				Timestamp.valueOf("2017-09-23 10:10:10.0"),
+				false);
+		studentLoginsDao.createStudentLogin(studentLogins);
+
+		HttpServletRequest request = new HttpServletRequest() {
+			@Override
+			public String getAuthType() {
+				return null;
+			}
+
+			@Override
+			public Cookie[] getCookies() {
+				return new Cookie[0];
+			}
+
+			@Override
+			public long getDateHeader(String s) {
+				return 0;
+			}
+
+			@Override
+			public String getHeader(String s) {
+				return null;
+			}
+
+			@Override
+			public Enumeration getHeaders(String s) {
+				return null;
+			}
+
+			@Override
+			public Enumeration getHeaderNames() {
+				return null;
+			}
+
+			@Override
+			public int getIntHeader(String s) {
+				return 0;
+			}
+
+			@Override
+			public String getMethod() {
+				return null;
+			}
+
+			@Override
+			public String getPathInfo() {
+				return null;
+			}
+
+			@Override
+			public String getPathTranslated() {
+				return null;
+			}
+
+			@Override
+			public String getContextPath() {
+				return null;
+			}
+
+			@Override
+			public String getQueryString() {
+				return null;
+			}
+
+			@Override
+			public String getRemoteUser() {
+				return null;
+			}
+
+			@Override
+			public boolean isUserInRole(String s) {
+				return false;
+			}
+
+			@Override
+			public Principal getUserPrincipal() {
+				return null;
+			}
+
+			@Override
+			public String getRequestedSessionId() {
+				return null;
+			}
+
+			@Override
+			public String getRequestURI() {
+				return null;
+			}
+
+			@Override
+			public StringBuffer getRequestURL() {
+				return null;
+			}
+
+			@Override
+			public String getServletPath() {
+				return null;
+			}
+
+			@Override
+			public HttpSession getSession(boolean b) {
+				return null;
+			}
+
+			@Override
+			public HttpSession getSession() {
+				return null;
+			}
+
+			@Override
+			public boolean isRequestedSessionIdValid() {
+				return false;
+			}
+
+			@Override
+			public boolean isRequestedSessionIdFromCookie() {
+				return false;
+			}
+
+			@Override
+			public boolean isRequestedSessionIdFromURL() {
+				return false;
+			}
+
+			@Override
+			public boolean isRequestedSessionIdFromUrl() {
+				return false;
+			}
+
+			@Override
+			public Object getAttribute(String s) {
+				return null;
+			}
+
+			@Override
+			public Enumeration getAttributeNames() {
+				return null;
+			}
+
+			@Override
+			public String getCharacterEncoding() {
+				return null;
+			}
+
+			@Override
+			public void setCharacterEncoding(String s) throws UnsupportedEncodingException {
+
+			}
+
+			@Override
+			public int getContentLength() {
+				return 0;
+			}
+
+			@Override
+			public String getContentType() {
+				return null;
+			}
+
+			@Override
+			public ServletInputStream getInputStream() throws IOException {
+				return null;
+			}
+
+			@Override
+			public String getParameter(String s) {
+				return null;
+			}
+
+			@Override
+			public Enumeration getParameterNames() {
+				return null;
+			}
+
+			@Override
+			public String[] getParameterValues(String s) {
+				return new String[0];
+			}
+
+			@Override
+			public Map getParameterMap() {
+				return null;
+			}
+
+			@Override
+			public String getProtocol() {
+				return null;
+			}
+
+			@Override
+			public String getScheme() {
+				return null;
+			}
+
+			@Override
+			public String getServerName() {
+				return null;
+			}
+
+			@Override
+			public int getServerPort() {
+				return 0;
+			}
+
+			@Override
+			public BufferedReader getReader() throws IOException {
+				return null;
+			}
+
+			@Override
+			public String getRemoteAddr() {
+				return null;
+			}
+
+			@Override
+			public String getRemoteHost() {
+				return null;
+			}
+
+			@Override
+			public void setAttribute(String s, Object o) {
+
+			}
+
+			@Override
+			public void removeAttribute(String s) {
+
+			}
+
+			@Override
+			public Locale getLocale() {
+				return null;
+			}
+
+			@Override
+			public Enumeration getLocales() {
+				return null;
+			}
+
+			@Override
+			public boolean isSecure() {
+				return false;
+			}
+
+			@Override
+			public RequestDispatcher getRequestDispatcher(String s) {
+				return null;
+			}
+
+			@Override
+			public String getRealPath(String s) {
+				return null;
+			}
+
+			@Override
+			public int getRemotePort() {
+				return 0;
+			}
+
+			@Override
+			public String getLocalName() {
+				return null;
+			}
+
+			@Override
+			public String getLocalAddr() {
+				return null;
+			}
+
+			@Override
+			public int getLocalPort() {
+				return 0;
+			}
+		};
+
+		LoginObject loginObject = new LoginObject("null2@gmail.com","pass");
+
+		Response response = studentFacing.loginUser(request ,loginObject);
+		Assert.assertEquals(401, response.getStatus());
+
+		studentLoginsDao.deleteStudentLogin("null2@gmail.com");
+		studentsDao.deleteStudent(TestStudent.getNeuId());
+	}
+
+
+	/*
+    StudentLogout
+	 */
+
+	@Test
+	public void studentLogoutUnAuthorizeTest() throws SQLException, ParseException {
+		Students TestStudent = new Students("130", "t@gmail.com", "test", "test",
+				"test", Gender.M, "F1", "1111111111",
+				"401 Terry Ave", "WA", "Seattle", "98109", Term.FALL, 2015,
+				Term.SPRING, 2017,
+				EnrollmentStatus.FULL_TIME, Campus.SEATTLE, DegreeCandidacy.MASTERS, null, true);
+		studentsDao.addStudent(TestStudent);
+
+		StudentLogins studentLogins = new StudentLogins("t@gmail.com",
+				"password",
+				"key",
+				Timestamp.valueOf("2017-09-23 10:10:10.0"),
+				Timestamp.valueOf("2017-09-23 10:10:10.0"),
+				false);
+		studentLoginsDao.createStudentLogin(studentLogins);
+
+		HttpServletRequest request = new HttpServletRequest() {
+			@Override
+			public String getAuthType() {
+				return null;
+			}
+
+			@Override
+			public Cookie[] getCookies() {
+				return new Cookie[0];
+			}
+
+			@Override
+			public long getDateHeader(String s) {
+				return 0;
+			}
+
+			@Override
+			public String getHeader(String s) {
+				return null;
+			}
+
+			@Override
+			public Enumeration getHeaders(String s) {
+				return null;
+			}
+
+			@Override
+			public Enumeration getHeaderNames() {
+				return null;
+			}
+
+			@Override
+			public int getIntHeader(String s) {
+				return 0;
+			}
+
+			@Override
+			public String getMethod() {
+				return null;
+			}
+
+			@Override
+			public String getPathInfo() {
+				return null;
+			}
+
+			@Override
+			public String getPathTranslated() {
+				return null;
+			}
+
+			@Override
+			public String getContextPath() {
+				return null;
+			}
+
+			@Override
+			public String getQueryString() {
+				return null;
+			}
+
+			@Override
+			public String getRemoteUser() {
+				return null;
+			}
+
+			@Override
+			public boolean isUserInRole(String s) {
+				return false;
+			}
+
+			@Override
+			public Principal getUserPrincipal() {
+				return null;
+			}
+
+			@Override
+			public String getRequestedSessionId() {
+				return null;
+			}
+
+			@Override
+			public String getRequestURI() {
+				return null;
+			}
+
+			@Override
+			public StringBuffer getRequestURL() {
+				return null;
+			}
+
+			@Override
+			public String getServletPath() {
+				return null;
+			}
+
+			@Override
+			public HttpSession getSession(boolean b) {
+				return null;
+			}
+
+			@Override
+			public HttpSession getSession() {
+				return null;
+			}
+
+			@Override
+			public boolean isRequestedSessionIdValid() {
+				return false;
+			}
+
+			@Override
+			public boolean isRequestedSessionIdFromCookie() {
+				return false;
+			}
+
+			@Override
+			public boolean isRequestedSessionIdFromURL() {
+				return false;
+			}
+
+			@Override
+			public boolean isRequestedSessionIdFromUrl() {
+				return false;
+			}
+
+			@Override
+			public Object getAttribute(String s) {
+				return null;
+			}
+
+			@Override
+			public Enumeration getAttributeNames() {
+				return null;
+			}
+
+			@Override
+			public String getCharacterEncoding() {
+				return null;
+			}
+
+			@Override
+			public void setCharacterEncoding(String s) throws UnsupportedEncodingException {
+
+			}
+
+			@Override
+			public int getContentLength() {
+				return 0;
+			}
+
+			@Override
+			public String getContentType() {
+				return null;
+			}
+
+			@Override
+			public ServletInputStream getInputStream() throws IOException {
+				return null;
+			}
+
+			@Override
+			public String getParameter(String s) {
+				return null;
+			}
+
+			@Override
+			public Enumeration getParameterNames() {
+				return null;
+			}
+
+			@Override
+			public String[] getParameterValues(String s) {
+				return new String[0];
+			}
+
+			@Override
+			public Map getParameterMap() {
+				return null;
+			}
+
+			@Override
+			public String getProtocol() {
+				return null;
+			}
+
+			@Override
+			public String getScheme() {
+				return null;
+			}
+
+			@Override
+			public String getServerName() {
+				return null;
+			}
+
+			@Override
+			public int getServerPort() {
+				return 0;
+			}
+
+			@Override
+			public BufferedReader getReader() throws IOException {
+				return null;
+			}
+
+			@Override
+			public String getRemoteAddr() {
+				return null;
+			}
+
+			@Override
+			public String getRemoteHost() {
+				return null;
+			}
+
+			@Override
+			public void setAttribute(String s, Object o) {
+
+			}
+
+			@Override
+			public void removeAttribute(String s) {
+
+			}
+
+			@Override
+			public Locale getLocale() {
+				return null;
+			}
+
+			@Override
+			public Enumeration getLocales() {
+				return null;
+			}
+
+			@Override
+			public boolean isSecure() {
+				return false;
+			}
+
+			@Override
+			public RequestDispatcher getRequestDispatcher(String s) {
+				return null;
+			}
+
+			@Override
+			public String getRealPath(String s) {
+				return null;
+			}
+
+			@Override
+			public int getRemotePort() {
+				return 0;
+			}
+
+			@Override
+			public String getLocalName() {
+				return null;
+			}
+
+			@Override
+			public String getLocalAddr() {
+				return null;
+			}
+
+			@Override
+			public int getLocalPort() {
+				return 0;
+			}
+		};
+
+		LoginObject loginObject = new LoginObject("t@gmail.com","IncorrectPassword");
+
+		Response response = studentFacing.logoutUser(request ,loginObject);
+		Assert.assertEquals(200, response.getStatus());
+
+		studentLoginsDao.deleteStudentLogin("t@gmail.com");
+		studentsDao.deleteStudent(TestStudent.getNeuId());
+	}
+
+	@Test
+	public void StudentLogoutTest() throws SQLException, ParseException {
+		Students TestStudent = new Students("130", "t@gmail.com", "test", "test",
+				"test", Gender.M, "F1", "1111111111",
+				"401 Terry Ave", "WA", "Seattle", "98109", Term.FALL, 2015,
+				Term.SPRING, 2017,
+				EnrollmentStatus.FULL_TIME, Campus.SEATTLE, DegreeCandidacy.MASTERS, null, true);
+		studentsDao.addStudent(TestStudent);
+
+		StudentLogins studentLogins = new StudentLogins("t@gmail.com",
+				"password",
+				"key",
+				Timestamp.valueOf("2017-09-23 10:10:10.0"),
+				Timestamp.valueOf("2017-09-23 10:10:10.0"),
+				false);
+		studentLoginsDao.createStudentLogin(studentLogins);
+
+		HttpServletRequest request = new HttpServletRequest() {
+			@Override
+			public String getAuthType() {
+				return null;
+			}
+
+			@Override
+			public Cookie[] getCookies() {
+				return new Cookie[0];
+			}
+
+			@Override
+			public long getDateHeader(String s) {
+				return 0;
+			}
+
+			@Override
+			public String getHeader(String s) {
+				return null;
+			}
+
+			@Override
+			public Enumeration getHeaders(String s) {
+				return null;
+			}
+
+			@Override
+			public Enumeration getHeaderNames() {
+				return null;
+			}
+
+			@Override
+			public int getIntHeader(String s) {
+				return 0;
+			}
+
+			@Override
+			public String getMethod() {
+				return null;
+			}
+
+			@Override
+			public String getPathInfo() {
+				return null;
+			}
+
+			@Override
+			public String getPathTranslated() {
+				return null;
+			}
+
+			@Override
+			public String getContextPath() {
+				return null;
+			}
+
+			@Override
+			public String getQueryString() {
+				return null;
+			}
+
+			@Override
+			public String getRemoteUser() {
+				return null;
+			}
+
+			@Override
+			public boolean isUserInRole(String s) {
+				return false;
+			}
+
+			@Override
+			public Principal getUserPrincipal() {
+				return null;
+			}
+
+			@Override
+			public String getRequestedSessionId() {
+				return null;
+			}
+
+			@Override
+			public String getRequestURI() {
+				return null;
+			}
+
+			@Override
+			public StringBuffer getRequestURL() {
+				return null;
+			}
+
+			@Override
+			public String getServletPath() {
+				return null;
+			}
+
+			@Override
+			public HttpSession getSession(boolean b) {
+				return null;
+			}
+
+			@Override
+			public HttpSession getSession() {
+				return null;
+			}
+
+			@Override
+			public boolean isRequestedSessionIdValid() {
+				return false;
+			}
+
+			@Override
+			public boolean isRequestedSessionIdFromCookie() {
+				return false;
+			}
+
+			@Override
+			public boolean isRequestedSessionIdFromURL() {
+				return false;
+			}
+
+			@Override
+			public boolean isRequestedSessionIdFromUrl() {
+				return false;
+			}
+
+			@Override
+			public Object getAttribute(String s) {
+				return null;
+			}
+
+			@Override
+			public Enumeration getAttributeNames() {
+				return null;
+			}
+
+			@Override
+			public String getCharacterEncoding() {
+				return null;
+			}
+
+			@Override
+			public void setCharacterEncoding(String s) throws UnsupportedEncodingException {
+
+			}
+
+			@Override
+			public int getContentLength() {
+				return 0;
+			}
+
+			@Override
+			public String getContentType() {
+				return null;
+			}
+
+			@Override
+			public ServletInputStream getInputStream() throws IOException {
+				return null;
+			}
+
+			@Override
+			public String getParameter(String s) {
+				return null;
+			}
+
+			@Override
+			public Enumeration getParameterNames() {
+				return null;
+			}
+
+			@Override
+			public String[] getParameterValues(String s) {
+				return new String[0];
+			}
+
+			@Override
+			public Map getParameterMap() {
+				return null;
+			}
+
+			@Override
+			public String getProtocol() {
+				return null;
+			}
+
+			@Override
+			public String getScheme() {
+				return null;
+			}
+
+			@Override
+			public String getServerName() {
+				return null;
+			}
+
+			@Override
+			public int getServerPort() {
+				return 0;
+			}
+
+			@Override
+			public BufferedReader getReader() throws IOException {
+				return null;
+			}
+
+			@Override
+			public String getRemoteAddr() {
+				return null;
+			}
+
+			@Override
+			public String getRemoteHost() {
+				return null;
+			}
+
+			@Override
+			public void setAttribute(String s, Object o) {
+
+			}
+
+			@Override
+			public void removeAttribute(String s) {
+
+			}
+
+			@Override
+			public Locale getLocale() {
+				return null;
+			}
+
+			@Override
+			public Enumeration getLocales() {
+				return null;
+			}
+
+			@Override
+			public boolean isSecure() {
+				return false;
+			}
+
+			@Override
+			public RequestDispatcher getRequestDispatcher(String s) {
+				return null;
+			}
+
+			@Override
+			public String getRealPath(String s) {
+				return null;
+			}
+
+			@Override
+			public int getRemotePort() {
+				return 0;
+			}
+
+			@Override
+			public String getLocalName() {
+				return null;
+			}
+
+			@Override
+			public String getLocalAddr() {
+				return null;
+			}
+
+			@Override
+			public int getLocalPort() {
+				return 0;
+			}
+		};
+
+		LoginObject loginObject = new LoginObject("t@gmail.com","password");
+
+		Response response = studentFacing.logoutUser(request ,loginObject);
+		Assert.assertEquals(200, response.getStatus());
+
+		studentLoginsDao.deleteStudentLogin("t@gmail.com");
+		studentsDao.deleteStudent(TestStudent.getNeuId());
+	}
+
+
+	/*
+    changePassword
+	 */
+
+	@Test
+	public void ChangePasswordTest() throws SQLException, ParseException {
+
+		PasswordChangeObject passwordChangeObject = new PasswordChangeObject("krishnakaranam3732@gmail.com",
+				"password","newpassword");
+
+		Response TopBachelorResponse;
+		TopBachelorResponse = studentFacing.changeUserPassword(passwordChangeObject);
+		Assert.assertEquals(200, TopBachelorResponse.getStatus());
+
+	}
+
+	@Test
+	public void ChangePasswordBadTest() throws SQLException, ParseException {
+
+		PasswordChangeObject passwordChangeObject = new PasswordChangeObject("krishnakaranam3732@gmail.com",
+				"$s0$41010$cwF4TDlHcEf5+zxUKgsA3w==$vlMxt0lC641Vdavp9nclzELFgS3YgkuG9GBTgeUKfwQ=","newpassword");
+
+		Response TopBachelorResponse;
+		TopBachelorResponse = studentFacing.changeUserPassword(passwordChangeObject);
+		Assert.assertEquals(400, TopBachelorResponse.getStatus());
+
+	}
+
+	/*
+	 * Student Password Reset Test
+	 */
+	@Test
+	public void emailForPasswordResetNullTest() throws SQLException, ParseException {
+
+		PasswordResetObject passwordResetObject = new PasswordResetObject(null);
+
+		Response TopBachelorResponse;
+		TopBachelorResponse = studentFacing.sendEmailForPasswordResetStudent(passwordResetObject);
+		Assert.assertEquals(400, TopBachelorResponse.getStatus());
+
+	}
+
+	@Test
+	public void emailForPasswordResetNotExistTest() throws SQLException, ParseException {
+
+		PasswordResetObject passwordResetObject = new PasswordResetObject("doesnotexist.com");
+
+		Response TopBachelorResponse;
+		TopBachelorResponse = studentFacing.sendEmailForPasswordResetStudent(passwordResetObject);
+		Assert.assertEquals(404, TopBachelorResponse.getStatus());
+
+	}
+
+	@Test
+	public void emailForPasswordResetFalseTest() throws SQLException, ParseException {
+		Students TestStudent = new Students("130", "t@gmail.com", "test", "test",
+				"test", Gender.M, "F1", "1111111111",
+				"401 Terry Ave", "WA", "Seattle", "98109", Term.FALL, 2015,
+				Term.SPRING, 2017,
+				EnrollmentStatus.FULL_TIME, Campus.SEATTLE, DegreeCandidacy.MASTERS, null, true);
+		studentsDao.addStudent(TestStudent);
+
+		StudentLogins studentLogins = new StudentLogins("t@gmail.com",
+				"123",
+				"key",
+				Timestamp.valueOf("2017-09-23 10:10:10.0"),
+				Timestamp.valueOf("2017-09-23 10:10:10.0"),
+				false);
+		studentLoginsDao.createStudentLogin(studentLogins);
+
+		PasswordResetObject passwordResetObject = new PasswordResetObject("t@gmail.com");
+
+		Response response = studentFacing.sendEmailForPasswordResetStudent(passwordResetObject);
+		Assert.assertEquals(404, response.getStatus());
+
+		studentLoginsDao.deleteStudentLogin("t@gmail.com");
+		studentsDao.deleteStudent(TestStudent.getNeuId());
+	}
+
+	/*
+    AutoFill
+	 */
+
+	@Test
+	public void AutoFillTest() throws SQLException, ParseException {
+		Response TopBachelorResponse;
+		TopBachelorResponse = studentFacing.getAutoFillSearch("Tom Cat 0012345671 tomcat@gmail.com");
+		Assert.assertEquals(200, TopBachelorResponse.getStatus());
+	}
+
+	@Test
+	public void AutoFillTest3() throws SQLException, ParseException {
+		Response TopBachelorResponse;
+		TopBachelorResponse = studentFacing.getAutoFillSearch("Tom Cat");
+		Assert.assertEquals(200, TopBachelorResponse.getStatus());
+	}
+
+	@Test
+	public void AutoFillTest2() throws SQLException, ParseException {
+
+		Students TestStudent = new Students("020", "test@gmail.com", "test", "test",
+				"test", Gender.M, "F1", "1111111111",
+				"401 Terry Ave", "WA", "Seattle", "98109", Term.FALL, 2015,
+				Term.SPRING, 2017,
+				EnrollmentStatus.FULL_TIME, Campus.SEATTLE, DegreeCandidacy.MASTERS, null, true);
+		studentsDao.addStudent(TestStudent);
+		Response TopBachelorResponse;
+		TopBachelorResponse = studentFacing.getAutoFillSearch("test test test 020 test@gmail.com");
+		Assert.assertEquals(200, TopBachelorResponse.getStatus());
+
+		studentsDao.deleteStudent(TestStudent.getNeuId());
+	}
+
 
 }
