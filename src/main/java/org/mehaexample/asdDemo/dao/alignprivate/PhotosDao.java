@@ -36,6 +36,7 @@ public class PhotosDao {
   public Photos getPhotoByNeuId(String neuId) {
     try {
       session = factory.openSession();
+      System.out.println("nuid photos = " + neuId);
       org.hibernate.query.Query query = session.createQuery("FROM Photos WHERE neuId = :neuId ");
       query.setParameter("neuId", neuId);
       List list = query.list();

@@ -101,6 +101,7 @@ public class StudentFacingService {
 
 		if (!studentDao.ifNuidExists(nuid)) {
 
+			System.out.println("hjgwshgh");
 			return Response.status(Response.Status.NOT_FOUND).
 					entity(NUIDNOTFOUND + ":" + new String(Base64.getEncoder().encode(nuid.getBytes()))).build();
 		} 
@@ -114,6 +115,7 @@ public class StudentFacingService {
 		}
 
 		if(studentRecord == null){
+			System.out.println("ooo");
 
 			return Response.status(Response.Status.NOT_FOUND).entity(NUIDNOTFOUND).build();
 		}
