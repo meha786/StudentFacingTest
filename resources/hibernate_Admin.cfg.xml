@@ -13,15 +13,15 @@
         </property>
 
         <property name="hibernate.connection.url">
-            jdbc:mariadb://${test.ip}:${test.port}/AlignPrivate71?autoReconnect=true
+            jdbc:mariadb://${database.ip}:${admin.port}/AlignAdmin?autoReconnect=true
         </property>
 
         <property name="hibernate.connection.username">
-            ${test.username}
+            ${database.username}
         </property>
 
         <property name="hibernate.connection.password">
-            ${test.password}
+            ${database.password}
         </property>
 
         <property name="hibernate.c3p0.min_size">5</property>
@@ -31,15 +31,9 @@
         <property name="hibernate.c3p0.idle_test_period">3000</property>
 
         <!-- List of XML mapping files -->
-        <mapping resource="Students.hbm.xml" />
-        <mapping resource="Courses.hbm.xml" />
-        <mapping resource="WorkExperiences.hbm.xml" />
-        <mapping resource="Electives.hbm.xml" />
-        <mapping resource="PriorEducations.hbm.xml" />
-        <mapping resource="StudentLogins.hbm.xml" />
-        <mapping resource="ExtraExperiences.hbm.xml" />
-        <mapping resource="Projects.hbm.xml" />
-        <mapping resource="Privacies.hbm.xml"/>
-        <mapping resource="Photos.hbm.xml"/>
+        <mapping resource="ElectivesAdmin.hbm.xml" />
+        <mapping resource="Administrators.hbm.xml" />
+        <mapping resource="AdministratorNotes.hbm.xml" />
+        <mapping resource="AdminLogins.hbm.xml" />
     </session-factory>
 </hibernate-configuration>

@@ -32,6 +32,7 @@ import org.mehaexample.asdDemo.alignWebsite.StudentFacingService;
 import org.mehaexample.asdDemo.dao.alignprivate.CoursesDao;
 import org.mehaexample.asdDemo.dao.alignprivate.ElectivesDao;
 import org.mehaexample.asdDemo.dao.alignprivate.ExtraExperiencesDao;
+import org.mehaexample.asdDemo.dao.alignprivate.PhotosDao;
 import org.mehaexample.asdDemo.dao.alignprivate.PrivaciesDao;
 import org.mehaexample.asdDemo.dao.alignprivate.ProjectsDao;
 import org.mehaexample.asdDemo.dao.alignprivate.StudentLoginsDao;
@@ -48,6 +49,7 @@ import org.mehaexample.asdDemo.model.alignadmin.Administrators;
 import org.mehaexample.asdDemo.model.alignadmin.LoginObject;
 import org.mehaexample.asdDemo.model.alignadmin.ParamsObject;
 import org.mehaexample.asdDemo.model.alignprivate.ExtraExperiences;
+import org.mehaexample.asdDemo.model.alignprivate.Photos;
 import org.mehaexample.asdDemo.model.alignprivate.Privacies;
 import org.mehaexample.asdDemo.model.alignprivate.Projects;
 import org.mehaexample.asdDemo.model.alignprivate.StudentLogins;
@@ -78,8 +80,11 @@ public class Student22Test {
 	private static StudentLoginsDao studentLoginsDao;
 	private static ExtraExperiencesDao extraExperiencesDao;
 	private static PasswordCreateObject passwordCreateObject;
+	private static PhotosDao photosDao;
+	
 	Students studentChangePassword;
 	StudentLogins studentLogins;
+	Photos photos;
 
 	UndergraduatesPublicDao undergraduatesPublicDao = new UndergraduatesPublicDao(true);
 
@@ -170,55 +175,27 @@ public class Student22Test {
 		studentsDao.deleteStudent("135");
 	}
 
-	/*
-    getStudentProile
-	 */
 
-//
-//	@Test
-//	public void getStudentProfileNotFoundTest() {
-//		Response studentProfileResponse = studentFacing.getOtherStudentProfile("MDAxMjM0MTIz");
-//		Assert.assertEquals(studentProfileResponse.getStatus(), 404);
-//	}
-
-
-	//    @Test
-	//    public void getStudentProfileTest() {
-	//        Students newStudent3 = new Students("001234123", "tomcat1111@gmail.com", "Tom", "",
-	//				"Dog", Gender.M, "F1", "1111111111",
-	//				"401 Terry Ave", "WA", "Seattle", "98109", Term.FALL, 2015,
-	//				Term.FALL, 2017,
-	//				EnrollmentStatus.DROPPED_OUT, Campus.CHARLOTTE, DegreeCandidacy.MASTERS, null, true);
-	//        
-	//		studentsDao.addStudent(newStudent3);
-	//
-	//        Privacies privacy = new Privacies("001234123", 1, true, true, true, true, true,
-	//        		true, true,true, true, true, true, true, true, true);
-	//        privacy.setNeuId("001234123");
-	//        privacy.setPublicId(studentsDao.getStudentRecord("001234123").getPublicId());
-	//        privaciesDao.createPrivacy(privacy);
-	//        
-	//		String nuid = new String(Base64.getDecoder().decode("MDAxMjM0MTIz"));
-	//		
-	//		System.out.println("nuiddd " + nuid);
-	// 
-	//            
-	//        Response studentProfileResponse = studentFacing.getOtherStudentProfile("MDAxMjM0MTIz");
-	//        
-	//        Assert.assertEquals(200, studentProfileResponse.getStatus());
-	//        
-	//        privaciesDao.deletePrivacy("001234123");
-	//        studentsDao.deleteStudent("001234123");
-	//    }
-
-
-	//    @Test
-	//    public void getStudentProfileBadTest() {
-	//        Response studentProfileResponse = studentFacing.getOtherStudentProfile("090");
-	//        String studentProfile = (String) studentProfileResponse.getEntity();
-	//        Assert.assertEquals("No Student record exists with given ID", studentProfile);
-	//    }
-
+	@Test
+	public void updateStudentWithPhotoNullTest(){
+//		byte[] b = "String".getBytes(); 
+//		Photos photo = new Photos("MDAxMjM0MTIi", b);
+//		photosDao.createPhoto(photo);
+		Response resp = studentFacing.updateStudentWithPhoto("MDAxMjM0MTIi", "String"); 
+		Assert.assertEquals("No Student record exists with given ID", resp.getEntity());
+		Assert.assertEquals(404, resp.getStatus()); 
+	}
+	
+	@Test
+	public void updateStudentWithPhotoNullTest1(){
+//		byte[] b = "String".getBytes(); 
+//		Photos photo = new Photos("MDAxMjM0MTIi", b);
+//		photosDao.createPhoto(photo);
+		Response resp = studentFacing.updateStudentWithPhoto(ECRYPTEDNEUIDTEST, "String"); 
+		Assert.assertEquals("No photo found for the given student", resp.getEntity());
+		Assert.assertEquals(404, resp.getStatus()); 
+	}
+	
 	@Test
 	public void updateStudentRecordTest1(){
 		Students student = studentsDao.getStudentRecord("001234123");
@@ -2533,6 +2510,56 @@ public class Student22Test {
 
 		studentsDao.deleteStudent(TestStudent.getNeuId());
 	}
+	
+
+	/*
+    getStudentProile
+	 */
+
+//
+//	@Test
+//	public void getStudentProfileNotFoundTest() {
+//		Response studentProfileResponse = studentFacing.getOtherStudentProfile("MDAxMjM0MTIz");
+//		Assert.assertEquals(studentProfileResponse.getStatus(), 404);
+//	}
+
+
+	//    @Test
+	//    public void getStudentProfileTest() {
+	//        Students newStudent3 = new Students("001234123", "tomcat1111@gmail.com", "Tom", "",
+	//				"Dog", Gender.M, "F1", "1111111111",
+	//				"401 Terry Ave", "WA", "Seattle", "98109", Term.FALL, 2015,
+	//				Term.FALL, 2017,
+	//				EnrollmentStatus.DROPPED_OUT, Campus.CHARLOTTE, DegreeCandidacy.MASTERS, null, true);
+	//        
+	//		studentsDao.addStudent(newStudent3);
+	//
+	//        Privacies privacy = new Privacies("001234123", 1, true, true, true, true, true,
+	//        		true, true,true, true, true, true, true, true, true);
+	//        privacy.setNeuId("001234123");
+	//        privacy.setPublicId(studentsDao.getStudentRecord("001234123").getPublicId());
+	//        privaciesDao.createPrivacy(privacy);
+	//        
+	//		String nuid = new String(Base64.getDecoder().decode("MDAxMjM0MTIz"));
+	//		
+	//		System.out.println("nuiddd " + nuid);
+	// 
+	//            
+	//        Response studentProfileResponse = studentFacing.getOtherStudentProfile("MDAxMjM0MTIz");
+	//        
+	//        Assert.assertEquals(200, studentProfileResponse.getStatus());
+	//        
+	//        privaciesDao.deletePrivacy("001234123");
+	//        studentsDao.deleteStudent("001234123");
+	//    }
+
+
+	//    @Test
+	//    public void getStudentProfileBadTest() {
+	//        Response studentProfileResponse = studentFacing.getOtherStudentProfile("090");
+	//        String studentProfile = (String) studentProfileResponse.getEntity();
+	//        Assert.assertEquals("No Student record exists with given ID", studentProfile);
+	//    }
 
 
 }
