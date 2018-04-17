@@ -38,6 +38,7 @@ import org.mehaexample.asdDemo.dao.alignprivate.ProjectsDao;
 import org.mehaexample.asdDemo.dao.alignprivate.StudentLoginsDao;
 import org.mehaexample.asdDemo.dao.alignprivate.StudentsDao;
 import org.mehaexample.asdDemo.dao.alignprivate.WorkExperiencesDao;
+import org.mehaexample.asdDemo.dao.alignpublic.StudentsPublicDao;
 import org.mehaexample.asdDemo.dao.alignpublic.UndergraduatesPublicDao;
 import org.mehaexample.asdDemo.enums.Campus;
 import org.mehaexample.asdDemo.enums.DegreeCandidacy;
@@ -55,6 +56,7 @@ import org.mehaexample.asdDemo.model.alignprivate.Projects;
 import org.mehaexample.asdDemo.model.alignprivate.StudentLogins;
 import org.mehaexample.asdDemo.model.alignprivate.Students;
 import org.mehaexample.asdDemo.model.alignprivate.WorkExperiences;
+import org.mehaexample.asdDemo.model.alignpublic.StudentsPublic;
 import org.mehaexample.asdDemo.restModels.EmailToRegister;
 import org.mehaexample.asdDemo.restModels.ExtraExperienceObject;
 import org.mehaexample.asdDemo.restModels.PasswordChangeObject;
@@ -81,7 +83,9 @@ public class Student22Test {
 	private static ExtraExperiencesDao extraExperiencesDao;
 	private static PasswordCreateObject passwordCreateObject;
 	private static PhotosDao photosDao;
-	
+	private static StudentsPublicDao studentsPublicDao;
+
+
 	Students studentChangePassword;
 	StudentLogins studentLogins;
 	Photos photos;
@@ -100,6 +104,7 @@ public class Student22Test {
 		projectsDao = new ProjectsDao(true); 
 		studentLoginsDao = new StudentLoginsDao();
 		extraExperiencesDao = new ExtraExperiencesDao();
+	    studentsPublicDao = new StudentsPublicDao(true);
 		passwordCreateObject = new PasswordCreateObject();
 	}
 
@@ -182,24 +187,24 @@ public class Student22Test {
 		Assert.assertEquals("No Student record exists with given ID", resp.getEntity());
 		Assert.assertEquals(404, resp.getStatus()); 
 	}
-	
+
 	@Test
 	public void updateStudentWithPhotoNullTest1(){ 
 		Response resp = studentFacing.updateStudentWithPhoto(ECRYPTEDNEUIDTEST, "String"); 
 		Assert.assertEquals("No photo found for the given student", resp.getEntity());
 		Assert.assertEquals(404, resp.getStatus());  
 	}
-	
-//	@Test
-//	public void updateStudentWithPhotoNullTest2(){ 
-//		byte[] b = "String".getBytes(); 
-//		Photos photo = new Photos("MDAxMjM0MTIz", b);
-//		photosDao.updatePhoto(photo);
-//		Response resp = studentFacing.updateStudentWithPhoto(ECRYPTEDNEUIDTEST, "String"); 
-//		Assert.assertEquals("Congratulations! Your Photo is uploaded successfully!", resp.getEntity());
-//		Assert.assertEquals(200, resp.getStatus());  
-//	}
-	
+
+	//	@Test
+	//	public void updateStudentWithPhotoNullTest2(){ 
+	//		byte[] b = "String".getBytes(); 
+	//		Photos photo = new Photos("MDAxMjM0MTIz", b);
+	//		photosDao.updatePhoto(photo);
+	//		Response resp = studentFacing.updateStudentWithPhoto(ECRYPTEDNEUIDTEST, "String"); 
+	//		Assert.assertEquals("Congratulations! Your Photo is uploaded successfully!", resp.getEntity());
+	//		Assert.assertEquals(200, resp.getStatus());  
+	//	}
+
 	@Test
 	public void updateStudentRecordTest1(){
 		Students student = studentsDao.getStudentRecord("001234123");
@@ -266,12 +271,12 @@ public class Student22Test {
 						endDate, "title", "description");
 
 		Response resp = studentFacing.addExtraExperience(ECRYPTEDNEUIDTEST, extraExperiencesObject);
- 
+
 		System.out.println("e" + resp.getEntity());
 		Assert.assertEquals("Start Date didn't parse", resp.getEntity());
 		Assert.assertEquals(400, resp.getStatus());
 	}
-	
+
 	@Test
 	public void addExtraExperienceTest4(){
 		String startDate = "01-01-2018";
@@ -281,12 +286,12 @@ public class Student22Test {
 						endDate, "title", "description");
 
 		Response resp = studentFacing.addExtraExperience(ECRYPTEDNEUIDTEST, extraExperiencesObject);
- 
+
 		System.out.println("e" + resp.getEntity());
 		Assert.assertEquals("End Date didn't parse", resp.getEntity());
 		Assert.assertEquals(400, resp.getStatus());
 	}
-	
+
 	@Test
 	public void addProjectTest1(){
 		Students student = studentsDao.getStudentRecord("001234123");
@@ -300,6 +305,30 @@ public class Student22Test {
 	}
 
 	@Test
+	public void updateExtraExperience4(){
+		String endDate = "01-01-2017";
+		String startDate = "01-01-2018";
+		ExtraExperienceObject extraExperiencesObject = 
+				new ExtraExperienceObject(111, "001234123", "companyName", startDate, 
+						endDate, "title", "description");
+
+		Response resp = studentFacing.updateExtraExperience("MDAxMjM0MTIi", 1, extraExperiencesObject);
+		Assert.assertEquals("No Student record exists with given ID", resp.getEntity().toString());
+	}
+
+	@Test
+	public void updateExtraExperience5(){
+		String endDate = "01-01-2017";
+		String startDate = "01-01-2018";
+		ExtraExperienceObject extraExperiencesObject = 
+				new ExtraExperienceObject(111, "001234123", "companyName", startDate, 
+						endDate, "title", "description");
+
+		Response resp = studentFacing.updateExtraExperience("MDAxMjM0MTIz", 1, extraExperiencesObject);
+		Assert.assertEquals("No Extra Experience record exists for a given Id: 1", resp.getEntity().toString());
+	}
+
+	@Test
 	public void updateExtraExperience1(){
 		String endDate = "01-01-2017";
 		String startDate = "01-01-2018";
@@ -310,7 +339,7 @@ public class Student22Test {
 		String oldDescription = extraExperiencesObject.getDescription();
 		Response resp = studentFacing.addExtraExperience(ECRYPTEDNEUIDTEST, extraExperiencesObject);
 		Assert.assertEquals(200, resp.getStatus());
-		
+
 		extraExperiencesObject.setDescription("d2");
 		int projectId = Integer.parseInt(resp.getEntity().toString()); 
 		Response respUpdate = studentFacing.updateExtraExperience(ECRYPTEDNEUIDTEST, projectId, extraExperiencesObject);
@@ -322,38 +351,38 @@ public class Student22Test {
 		Response resp2 = studentFacing.deleteExtraExperience(ECRYPTEDNEUIDTEST, projectId);
 		Assert.assertEquals("Experience deleted successfully", resp2.getEntity().toString());
 	}
-	
+
 	@Test
 	public void updateExtraExperience2(){
 		String startDate = "01-01-2018";
 		String endDate = "Tue Apr 29 11:40:55 GMT+04:00 2014";
-		 
+
 		ExtraExperienceObject extraExperiencesObject = 
 				new ExtraExperienceObject(111, "001234123", "companyName", startDate, 
 						endDate, "title", "description");
 
 
 		Response resp = studentFacing.addExtraExperience(ECRYPTEDNEUIDTEST, extraExperiencesObject);
- 
+
 		Assert.assertEquals("End Date didn't parse", resp.getEntity());
 		Assert.assertEquals(400, resp.getStatus());
 	}
-	
+
 	@Test
 	public void updateExtraExperience3(){
 		String endDate = "Tue Apr 29 11:40:55 GMT+04:00 2014";
 		String startDate = "Tue Apr 29 11:40:55 GMT+04:00 2014";
-		 
+
 		ExtraExperienceObject extraExperiencesObject = 
 				new ExtraExperienceObject(111, "001234123", "companyName", startDate, 
 						endDate, "title", "description");
 
 		Response resp = studentFacing.addExtraExperience(ECRYPTEDNEUIDTEST, extraExperiencesObject);
- 
+
 		Assert.assertEquals("Start Date didn't parse", resp.getEntity());
 		Assert.assertEquals(400, resp.getStatus());
 	}
-	
+
 	@Test
 	public void updateProject4(){
 		ProjectObject projectObject = new ProjectObject(10, "001234123", "Student Website", "01-01-2018",
@@ -376,18 +405,17 @@ public class Student22Test {
 		Response resp2 = studentFacing.deleteProject(ECRYPTEDNEUIDTEST, projectId);
 		Assert.assertEquals("Project deleted successfully", resp2.getEntity().toString());
 	}
-	
 
 	@Test
 	public void updateProject2(){
 		String startDate = "01-01-2018";
 		String endDate = "Tue Apr 29 11:40:55 GMT+04:00 2014";
-		 
-	    ProjectObject projectObject = new ProjectObject(10, "001234123", "Student Website", startDate,
-						endDate, "description");
+
+		ProjectObject projectObject = new ProjectObject(10, "001234123", "Student Website", startDate,
+				endDate, "description");
 
 		Response resp = studentFacing.addProject(ECRYPTEDNEUIDTEST, projectObject);
- 
+
 		Assert.assertEquals("End Date didn't parse", resp.getEntity());
 		Assert.assertEquals(400, resp.getStatus());
 	}
@@ -396,16 +424,16 @@ public class Student22Test {
 	public void updateProject3(){
 		String endDate = "Tue Apr 29 11:40:55 GMT+04:00 2014";
 		String startDate = "Tue Apr 29 11:40:55 GMT+04:00 2014";
-		 
-	    ProjectObject projectObject = new ProjectObject(10, "001234123", "Student Website", startDate,
-						endDate, "description");
+
+		ProjectObject projectObject = new ProjectObject(10, "001234123", "Student Website", startDate,
+				endDate, "description");
 
 		Response resp = studentFacing.addProject(ECRYPTEDNEUIDTEST, projectObject);
- 
+
 		Assert.assertEquals("Start Date didn't parse", resp.getEntity());
 		Assert.assertEquals(400, resp.getStatus());
 	}
-	
+
 	@Test
 	public void updatePrivaciesTest1(){
 		EmailToRegister emailToRegister = new EmailToRegister("");
@@ -447,7 +475,7 @@ public class Student22Test {
 		Response resp2 = studentFacing.deleteExtraExperience(ECRYPTEDNEUIDTEST, experirnceId);
 		Assert.assertEquals("Experience deleted successfully", resp2.getEntity().toString());
 	}
-	
+
 	@Test
 	public void getStudentExtraExperience2(){
 		Response getResp = studentFacing.getStudentExtraExperience("MDAxMjM0MTIi");
@@ -462,21 +490,21 @@ public class Student22Test {
 		Assert.assertEquals(404, getResp.getStatus());
 		Assert.assertEquals("No Extra Experience record exists for a given NeuId: MDAxMjM0MTIz", getResp.getEntity());
 	}
-	
+
 	@Test
 	public void getStudentWorkExperiences3(){
 		Response getResp = studentFacing.getStudentWorkExperiences("MDAxMjM0MTIi");
 		Assert.assertEquals(404, getResp.getStatus());
 		Assert.assertEquals("No Student record exists with given ID", getResp.getEntity());
 	}
-	
+
 	@Test
 	public void getStudentWorkExperiences2(){
 		Response getResp = studentFacing.getStudentWorkExperiences(ECRYPTEDNEUIDTEST);
 		Assert.assertEquals(404, getResp.getStatus());
 		Assert.assertEquals("No Student record exists with given ID", getResp.getEntity());
 	}
-	
+
 	@Test
 	public void getStudentWorkExperiences1(){
 		WorkExperiences newWorkExperience = new WorkExperiences();
@@ -508,6 +536,89 @@ public class Student22Test {
 		workExperiencesDao.deleteWorkExperienceByNeuId(NEUIDTEST);
 	}
 
+	@Test
+	public void getAllGradYears(){
+		Response  response = studentFacing.getAllCampuses();
+		Response  response2 = studentFacing.getAllCoopCompanies();
+		Response  response3 = studentFacing.getAllCourses();
+		Response  response4 = studentFacing.getAllEnrollmentYears();
+		Response  response5 = studentFacing.getAllGradYears();
+		Assert.assertEquals(200, response.getStatus());
+		Assert.assertEquals(200, response2.getStatus());
+		Assert.assertEquals(200, response3.getStatus());
+		Assert.assertEquals(200, response4.getStatus());
+		Assert.assertEquals(200, response5.getStatus());
+	}
+
+	@Test
+	public void getStudentPrivacies1(){
+		Response  response = studentFacing.getStduentPrivacies("MDAxMjM0MTIi");
+		Assert.assertEquals(404, response.getStatus());
+	}
+
+	@Test
+	public void getStudentPrivacies2(){
+		Privacies privacy = new Privacies("001234123", 1, true, true, true, true, true,
+				true, true,true, true, true, true, true, true, true);
+		privacy.setNeuId("001234123");
+		privacy.setPublicId(studentsDao.getStudentRecord("001234123").getPublicId());
+		privaciesDao.createPrivacy(privacy);
+		
+		Response  response = studentFacing.getStduentPrivacies(ECRYPTEDNEUIDTEST);
+
+		Assert.assertEquals(200, response.getStatus());
+	}
+	
+	@Test
+	public void updatePrivacies(){
+		Privacies privacy = new Privacies("001234123", 1, true, true, true, true, true,
+				true, true,true, true, true, true, true, true, true);
+		privacy.setNeuId("001234123");
+		privacy.setPublicId(studentsDao.getStudentRecord("001234123").getPublicId());
+		privaciesDao.createPrivacy(privacy);
+				
+		privacy.setVisibleToPublic(false); 
+		
+		Response  response = studentFacing.updatePrivacies(ECRYPTEDNEUIDTEST, privacy);
+
+		Assert.assertEquals(privacy.isVisibleToPublic(), false);
+
+		Assert.assertEquals(200, response.getStatus());
+	}
+	
+	@Test
+	public void updatePrivaciesNullTest(){
+		Privacies privacy = new Privacies("0012341231", 1, true, true, true, true, true,
+				true, true,true, true, true, true, true, true, true);
+		privacy.setNeuId("0012341231");
+		privacy.setPublicId(2);
+		
+		Response  response = studentFacing.updatePrivacies(ECRYPTEDNEUIDTEST, privacy);
+
+		Assert.assertEquals("No Privacies record exists for a given NUID", response.getEntity());
+	}
+	
+	@Test
+	public void updatePrivaciesNullTest2(){
+		Privacies privacy = new Privacies("001234123", 1, true, true, true, true, true,
+				true, true,true, true, true, true, true, true, true);
+		privacy.setNeuId("001234123");
+		privacy.setPublicId(studentsDao.getStudentRecord("001234123").getPublicId());
+		privaciesDao.createPrivacy(privacy);
+				
+		privacy.setVisibleToPublic(false); 
+		
+		StudentsPublic studentsPublic = new 
+				StudentsPublic(studentsDao.getStudentRecord("001234123").getPublicId(), 2016, true);
+		studentsPublicDao.createStudent(studentsPublic);
+
+		Response  response = studentFacing.updatePrivacies(ECRYPTEDNEUIDTEST, privacy);
+
+		Assert.assertEquals(privacy.isVisibleToPublic(), false);
+
+		Assert.assertEquals(200, response.getStatus());
+	}
+	
 	@Test
 	public void loginUser1(){
 		LoginObject loginObject = new LoginObject("test.alignstudent123@gmail.com", "mangograpes123");
@@ -2658,18 +2769,18 @@ public class Student22Test {
 
 		studentsDao.deleteStudent(TestStudent.getNeuId());
 	}
-	
+
 
 	/*
     getStudentProile
 	 */
 
-//
-//	@Test
-//	public void getStudentProfileNotFoundTest() {
-//		Response studentProfileResponse = studentFacing.getOtherStudentProfile("MDAxMjM0MTIz");
-//		Assert.assertEquals(studentProfileResponse.getStatus(), 404);
-//	}
+	//
+	//	@Test
+	//	public void getStudentProfileNotFoundTest() {
+	//		Response studentProfileResponse = studentFacing.getOtherStudentProfile("MDAxMjM0MTIz");
+	//		Assert.assertEquals(studentProfileResponse.getStatus(), 404);
+	//	}
 
 
 	//    @Test

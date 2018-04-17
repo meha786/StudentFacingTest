@@ -915,7 +915,7 @@ public class StudentFacingService {
 	@Path("graduationyears")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getAllGradYears(){
-		List<Integer> years;
+		List<Integer> years = null;
 		JSONArray result = new JSONArray();
 		try {
 			years = studentsPublicDao.getListOfAllGraduationYears();
@@ -944,7 +944,7 @@ public class StudentFacingService {
 	@Path("/coops")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getAllCoopCompanies() {
-		List<String> listOfAllCoopCompanies;
+		List<String> listOfAllCoopCompanies = null;
 		try {
 			listOfAllCoopCompanies = workExperiencesPublicDao.getListOfAllCoopCompanies();
 
@@ -968,7 +968,7 @@ public class StudentFacingService {
 	@Path("/courses")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getAllCourses() {
-		List<Courses> listOfAllCourses;
+		List<Courses> listOfAllCourses = null;
 		List<String> listofCouseIds = new ArrayList<>();
 		try {
 			listOfAllCourses = coursesDao.getAllCourses();
@@ -997,7 +997,7 @@ public class StudentFacingService {
 	@Path("/enrollmentyears")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getAllEnrollmentYears() {
-		List<Integer> listOfAllEnrollmentYears;
+		List<Integer> listOfAllEnrollmentYears = null;
 		try {
 
 			listOfAllEnrollmentYears = studentDao.getAllEntryYears();
@@ -1023,7 +1023,7 @@ public class StudentFacingService {
 	@Path("/campuses")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getAllCampuses() {
-		List<String> listOfAllCampuses;
+		List<String> listOfAllCampuses = null;
 		try {
 			listOfAllCampuses = studentDao.getAllCampuses();
 
@@ -1434,41 +1434,6 @@ public class StudentFacingService {
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).
 					entity("Something Went Wrong" + studentEmail).build();
 		}
-	}
-
-	/**
-	 * This function adds privacy for a given student
-	 * 
-	 * @param privacy
-	 * @return 200 Response if the privacy is created successfully for the given student
-	 */
-	@POST
-	@Path("/students/{NUID}/privacies/")
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
-	public Response addPrivacy(@PathParam("NUID") String neuId, Privacies privacy){
-		neuId = new String(Base64.getDecoder().decode(neuId));
-		Privacies privacies = null;
-
-		Students student = studentDao.getStudentRecord(neuId);
-
-		if (!studentDao.ifNuidExists(neuId)) {
-
-			return Response.status(Response.Status.NOT_FOUND).entity(NUIDNOTFOUND).build();
-		}
-
-		privacy.setNeuId(student.getNeuId());
-		privacy.setPublicId(student.getPublicId()); 
-
-		try{
-			privacies = privaciesDao.createPrivacy(privacy);
-		}catch(Exception ex) {
-
-			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).
-					entity(ex).build();
-		}
-
-		return Response.status(Response.Status.OK).entity("Privacies added successfully!").build();
 	}
 
 	/**
