@@ -63,6 +63,7 @@ import org.mehaexample.asdDemo.restModels.PasswordChangeObject;
 import org.mehaexample.asdDemo.restModels.PasswordCreateObject;
 import org.mehaexample.asdDemo.restModels.PasswordResetObject;
 import org.mehaexample.asdDemo.restModels.ProjectObject;
+import org.mehaexample.asdDemo.restModels.SearchOtherStudents;
 
 import junit.framework.Assert;
 
@@ -178,9 +179,31 @@ public class Student22Test {
 
 		studentLoginsDao.deleteStudentLogin("krishnakaranam3732@gmail.com");
 		studentsDao.deleteStudent("135");
+	}	   
+
+	@Test
+	public void search(){
+		List<String> companyList = new ArrayList<>();
+		List<String> courseNameList = new ArrayList<>();
+		List<String> startTermList = new ArrayList<>();
+		List<String> endTermList = new ArrayList<>();
+		List<String> campusList = new ArrayList<>();
+		List<String> genderList = new ArrayList<>();
+
+		companyList.add("Amazon");
+		courseNameList.add("CS5200");
+		startTermList.add("2019");
+		campusList.add("SEATTLE"); 
+		endTermList.add("2019");
+		genderList.add("F");
+
+		SearchOtherStudents search = new SearchOtherStudents(companyList, courseNameList,startTermList,
+				endTermList, campusList, genderList);
+		Response response = studentFacing.searchStudent(search);
+		
+		Assert.assertEquals(200, response.getStatus()); 
 	}
-
-
+	
 	@Test
 	public void updateStudentWithPhotoNullTest(){
 		Response resp = studentFacing.updateStudentWithPhoto("MDAxMjM0MTIi", "String"); 
