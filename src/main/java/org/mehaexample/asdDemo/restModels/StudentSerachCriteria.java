@@ -1,71 +1,16 @@
 package org.mehaexample.asdDemo.restModels;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class StudentSerachCriteria {
 	List<String> coops;
 	List<String> undergraddegree;
 	List<String> undergradschool;
 	List<String> graduationyear;
-	String beginindex;
-	String endindex;
 	
-	/**
-	 * @return the beginindex
-	 */
-	public String getBeginindex() {
-		return beginindex;
-	}
-
-	/**
-	 * @param beginindex the beginindex to set
-	 */
-	public void setBeginindex(String beginindex) {
-		this.beginindex = beginindex;
-	}
-
-	/**
-	 * @return the endindex
-	 */
-	public String getEndindex() {
-		return endindex;
-	}
-
-	/**
-	 * @param endindex the endindex to set
-	 */
-	public void setEndindex(String endindex) {
-		this.endindex = endindex;
-	}
-
-	/**
-	 * 
-	 */
-	public StudentSerachCriteria() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
-
-	/**
-	 * @param coops
-	 * @param undergraddegree
-	 * @param undergradschool
-	 * @param graduationyear
-	 * @param beginindex
-	 * @param endindex
-	 */
-	public StudentSerachCriteria(List<String> coops,
-			List<String> undergraddegree, List<String> undergradschool,
-			List<String> graduationyear, String beginindex, String endindex) {
-		super();
-		this.coops = coops;
-		this.undergraddegree = undergraddegree;
-		this.undergradschool = undergradschool;
-		this.graduationyear = graduationyear;
-		this.beginindex = beginindex;
-		this.endindex = endindex;
-	}
-
 	public List<String> getCoops() {
 		return coops;
 	}
@@ -96,5 +41,18 @@ public class StudentSerachCriteria {
 
 	public void setGraduationyear(List<String> graduationyear) {
 		this.graduationyear = graduationyear;
+	}
+
+	public StudentSerachCriteria(List<String> coops, List<String> undergraddegree, List<String> undergradschool,
+			List<String> graduationyear) {
+		super();
+		this.coops = coops;
+		this.undergraddegree = undergraddegree;
+		this.undergradschool = undergradschool;
+		this.graduationyear = graduationyear;
+	}
+	
+	public StudentSerachCriteria() {
+		super();
 	}
 }

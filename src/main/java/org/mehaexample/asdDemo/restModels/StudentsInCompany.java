@@ -19,9 +19,6 @@ public class StudentsInCompany {
 	}
 	
 	public Campus getCampusAsEnum(){
-		if(campus == null || campus.isEmpty()) {
-			return null;
-		}	
 		
 		return Campus.valueOf(campus.toUpperCase());
 	}

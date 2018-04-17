@@ -16,6 +16,7 @@ public class Students {
   private String middleName;
   private String lastName;
   private Gender gender;
+//  private String race;
   private boolean scholarship;
   private String visa;
   private String phoneNum;
@@ -67,6 +68,35 @@ public class Students {
     this.visible = visible;
   }
 
+//  public Students(String neuId, String email, String firstName, String middleName, String lastName, Gender gender,
+//                  String visa, String phoneNum, String address, String state, String city, String zip,
+//                  Term entryTerm, int entryYear, Term expectedLastTerm, int expectedLastYear,
+//                  EnrollmentStatus status, Campus campus, DegreeCandidacy degree, Blob photo, boolean visible) {
+//    this.neuId = neuId;
+//    this.email = email;
+//    this.firstName = firstName;
+//    this.middleName = middleName;
+//    this.lastName = lastName;
+//    this.gender = gender;
+////    this.race = race;
+//    this.scholarship = false;
+//    this.visa = visa;
+//    this.phoneNum = phoneNum;
+//    this.address = address;
+//    this.state = state;
+//    this.city = city;
+//    this.zip = zip;
+//    this.entryTerm = entryTerm;
+//    this.entryYear = entryYear;
+//    this.expectedLastTerm = expectedLastTerm;
+//    this.expectedLastYear = expectedLastYear;
+//    this.enrollmentStatus = status;
+//    this.campus = campus;
+//    this.degree = degree;
+//    this.photo = photo;
+//    this.visible = visible;
+//  }
+
   public Students(String neuId, String email, String firstName, String middleName, String lastName, Gender gender,
                   boolean scholarship, String visa, String phoneNum, String address, String state,
                   String city, String zip, Term entryTerm, int entryYear, Term expectedLastTerm, int expectedLastYear,
@@ -78,6 +108,7 @@ public class Students {
     this.middleName = middleName;
     this.lastName = lastName;
     this.gender = gender;
+//    this.race = race;
     this.scholarship = scholarship;
     this.visa = visa;
     this.phoneNum = phoneNum;
@@ -161,6 +192,14 @@ public class Students {
   public void setGender(Gender gender) {
     this.gender = gender;
   }
+
+//  public String getRace() {
+//    return race;
+//  }
+//
+//  public void setRace(String race) {
+//    this.race = race;
+//  }
 
   public boolean isScholarship() {
     return scholarship;

@@ -2,7 +2,6 @@ package org.mehaexample.asdDemo.restModels;
 
 import org.mehaexample.asdDemo.enums.Campus;
 
-
 public class StudentsWorkingFullTime {
 	private String campus;
 	private int year;
@@ -18,9 +17,6 @@ public class StudentsWorkingFullTime {
 	}
 	
 	public Campus getCampusAsEnum(){
-		if(campus == null || campus.isEmpty()) {
-			return null;
-		}	
 		
 		return Campus.valueOf(campus.toUpperCase());
 	}

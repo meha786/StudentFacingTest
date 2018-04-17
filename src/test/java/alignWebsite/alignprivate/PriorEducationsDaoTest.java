@@ -2,8 +2,6 @@ package alignWebsite.alignprivate;
 
 import org.hibernate.HibernateException;
 import org.junit.*;
-import org.mehaexample.asdDemo.dao.alignprivate.PriorEducationsDao;
-import org.mehaexample.asdDemo.dao.alignprivate.StudentsDao;
 import org.mehaexample.asdDemo.dao.alignpublic.MultipleValueAggregatedDataDao;
 import org.mehaexample.asdDemo.enums.Campus;
 import org.mehaexample.asdDemo.enums.DegreeCandidacy;
@@ -15,9 +13,12 @@ import org.mehaexample.asdDemo.model.alignadmin.TopBachelor;
 import org.mehaexample.asdDemo.model.alignprivate.PriorEducations;
 import org.mehaexample.asdDemo.model.alignprivate.Students;
 import org.mehaexample.asdDemo.model.alignpublic.MultipleValueAggregatedData;
+import org.mehaexample.asdDemo.dao.alignprivate.PriorEducationsDao;
+import org.mehaexample.asdDemo.dao.alignprivate.StudentsDao;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -113,18 +114,28 @@ public class PriorEducationsDaoTest {
     assertTrue(temp.get(1).getDegree().equals("farming"));
     assertTrue(temp.get(1).getTotalStudents() == 1);
 
-    temp = priorEducationsDao.getTopTenBachelors(Campus.BOSTON, 2016);
+    List<Campus> list = new ArrayList<>();
+    list.add(Campus.BOSTON);
+    temp = priorEducationsDao.getTopTenBachelors(list, 2016);
     assertTrue(temp.size() == 1);
     assertTrue(temp.get(0).getDegree().equals("farming"));
 
-    temp = priorEducationsDao.getTopTenBachelors(Campus.SEATTLE, 2016);
+    list.add(Campus.SEATTLE);
+    temp = priorEducationsDao.getTopTenBachelors(list, 2016);
+    assertTrue(temp.size() == 2);
+
+    list.clear();
+    list.add(Campus.SEATTLE);
+    temp = priorEducationsDao.getTopTenBachelors(list, 2016);
     assertTrue(temp.size() == 1);
     assertTrue(temp.get(0).getDegree().equals("Computer Science"));
 
-    temp = priorEducationsDao.getTopTenBachelors(Campus.SEATTLE, 2000);
+    temp = priorEducationsDao.getTopTenBachelors(list, 2000);
     assertTrue(temp.size() == 0);
 
-    temp = priorEducationsDao.getTopTenBachelors(Campus.CHARLOTTE, 2016);
+    list.clear();
+    list.add(Campus.CHARLOTTE);
+    temp = priorEducationsDao.getTopTenBachelors(list, 2016);
     assertTrue(temp.isEmpty());
 
     // delete new prior education
@@ -218,7 +229,6 @@ public class PriorEducationsDaoTest {
     // create new work experience
     priorEducationsDao.createPriorEducation(newPriorEducation);
     PriorEducations foundPriorEducation = priorEducationsDao.getPriorEducationsByNeuId("111234567").get(0);
-    System.out.println(foundPriorEducation.getGpa());
     assertTrue(foundPriorEducation.getGpa() == 4.00f);
     assertTrue(foundPriorEducation.getInstitutionName().equals("Stanford University"));
 
